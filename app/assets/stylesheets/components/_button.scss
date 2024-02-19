@@ -1,0 +1,12 @@
+.button {
+  background-color: $main;
+  box-shadow: 0 2px 8px rgba(0,0,153,0.27);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 12px 25px;
+
+  a, input {
+    color: white;
+    text-decoration: none;
+  }
+}

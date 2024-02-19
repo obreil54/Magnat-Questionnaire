@@ -1,10 +1,9 @@
-// Specific CSS for your home-page
-
 @media (max-width: 767px) {
   // Your mobile styles here
 
-  #home {
+  #log-in {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 100vh;
