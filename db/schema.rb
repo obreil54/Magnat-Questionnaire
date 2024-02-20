@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_20_120718) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_20_131102) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -24,6 +24,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_20_120718) do
     t.index ["question_id"], name: "index_answers_on_question_id"
     t.index ["questionnaire_id"], name: "index_answers_on_questionnaire_id"
     t.index ["user_id"], name: "index_answers_on_user_id"
+  end
+
+  create_table "equipment_questionnaires", force: :cascade do |t|
+    t.bigint "it_equipment_id", null: false
+    t.bigint "questionnaire_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["it_equipment_id"], name: "index_equipment_questionnaires_on_it_equipment_id"
+    t.index ["questionnaire_id"], name: "index_equipment_questionnaires_on_questionnaire_id"
   end
 
   create_table "it_equipments", force: :cascade do |t|
@@ -42,10 +51,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_20_120718) do
   create_table "questionnaires", force: :cascade do |t|
     t.string "title"
     t.text "description"
-    t.bigint "it_equipment_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["it_equipment_id"], name: "index_questionnaires_on_it_equipment_id"
   end
 
   create_table "questionnaires_questions", id: false, force: :cascade do |t|
@@ -60,6 +67,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_20_120718) do
     t.string "question_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "options", default: [], array: true
   end
 
   create_table "users", force: :cascade do |t|
@@ -75,6 +83,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_20_120718) do
   add_foreign_key "answers", "questionnaires"
   add_foreign_key "answers", "questions"
   add_foreign_key "answers", "users"
+  add_foreign_key "equipment_questionnaires", "it_equipments"
+  add_foreign_key "equipment_questionnaires", "questionnaires"
   add_foreign_key "it_equipments", "users"
-  add_foreign_key "questionnaires", "it_equipments"
 end
