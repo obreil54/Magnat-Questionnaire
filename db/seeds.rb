@@ -22,7 +22,7 @@ user = User.create!(
 )
 
 laptop = ItEquipment.create!(
-  category: "Laptop",
+  category: "laptop",
   make: "MSI",
   model: "Stealth 15M",
   description: "Some minor damage and battery only functions when plugged in",

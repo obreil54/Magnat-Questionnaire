@@ -1,0 +1,24 @@
+<div class="card">
+  <h1><%= @questionnaire.title %></h1>
+  <%= simple_form_for :answer, url: answers_path do |f| %>
+    <div data-controller="questionnaire">
+      <% @questions.each_with_index do |question, index| %>
+        <div data-questionnaire-target="question" class="<%= 'd-none' unless index.zero? %>">
+          <h2><%= index + 1 %> <%= question.content %></h2>
+          <% case question.question_type %>
+          <% when 'text' %>
+            <%= f.input :response, as: :text, input_html: { name: "answers[#question.id]" } %>
+          <% when 'select' %>
+            <%= f.input :response, as: :select, collection: question.options, input_html: { name: "answers[#question.id]" } %>
+          <% when 'photo' %>
+            <%= f.input :response, as: :file, input_html: { name: "answers[#question.id]"} %>
+          <% end %>
+        </div>
+      <% end %>
+
+      <button type="button" data-action="click->questionnaire#previous">Back</button>
+      <button type="button" data-action="click->questionnaire#next">Next</button><br>
+      <%= f.button :submit, "Submit", class: "d-none", data: { questionnaire_target: "submit" } %>
+    </div>
+  <% end %>
+</div>

@@ -25,7 +25,7 @@ class SessionsController < ApplicationController
     @user = User.find_by(email: email, code: code)
     if @user
       session[:user_id] = @user.id
-      redirect_to root_path, notice: "You are now logged in."
+      redirect_to user_profile_path, notice: "You are now logged in."
     else
       redirect_to verify_path, alert: "Invalid code."
     end
