@@ -1,0 +1,11 @@
+<div class="card">
+  <h1>Welcome <%= @user.first_name %> <%= @user.last_name %>!</h1>
+  <h2>Your equipment:</h2>
+  <% @equipment.each do |equipment| %>
+    <%= "#{equipment.category.capitalize} - #{equipment.make} #{equipment.model}" %>
+  <% end %>
+  <h2>Your questionnaires</h2>
+  <% @questionnaires.each do |questionnaire| %>
+    <%= link_to questionnaire.title, questionnaire_path(questionnaire) %>
+  <% end %>
+</div>

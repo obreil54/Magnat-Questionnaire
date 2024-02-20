@@ -1,6 +1,9 @@
-<h2>Enter Verification Code:</h2>
-
-<%= simple_form_for :verification, url: verify_path, method: :post do |f| %>
-  <%= f.input :code, required: true, label: "Verification Code", input_html: { maxlength: 4 } %>
-  <%= f.button :submit, "Verify Code" %>
-<% end %>
+<div class="card">
+  <h2>Введите код подтверждения:</h2>
+  <div class="form">
+    <%= simple_form_for :verification, url: verify_path, method: :post do |f| %>
+      <%= f.input :code, required: true, label: "Код", input_html: { maxlength: 4 } %>
+      <h2 class="button"><%= f.button :submit, "Войти" %></h2>
+    <% end %>
+  </div>
+</div>

@@ -1,12 +1,15 @@
 @media (max-width: 767px) {
   // Your mobile styles here
 
-  #log-in {
+  .card {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    width: 100%;
+    background-color: white;
+    margin: auto;
+    padding: 40px;
+    margin: 0 40px;
+    text-align: center;
   }
 }

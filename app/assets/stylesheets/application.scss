@@ -11,4 +11,17 @@
 @import "components/index";
 @import "components/button";
 @import "components/form";
+@import "components/card";
 @import "pages/index";
+
+body {
+  background-color: $main;
+  font-family: $body-font;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin: 0;
+  width: 100%;
+}
