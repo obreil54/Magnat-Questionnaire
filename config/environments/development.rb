@@ -34,7 +34,7 @@ Rails.application.configure do
   end
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
+  config.active_storage.service = :cloudinary
 
   config.action_mailer.delivery_method = :letter_opener
   config.action_mailer.perform_deliveries = true
@@ -71,4 +71,5 @@ Rails.application.configure do
 
   # Raise error when a before_action's only/except options reference missing actions
   config.action_controller.raise_on_missing_callback_actions = true
+  config.hosts << "9ea1-90-205-170-140.ngrok-free.app"
 end

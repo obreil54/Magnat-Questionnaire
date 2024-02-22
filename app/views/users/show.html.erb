@@ -8,4 +8,5 @@
   <% @questionnaires.each do |questionnaire| %>
     <%= link_to questionnaire.title, questionnaire_path(questionnaire) %>
   <% end %>
+  <h2><%= link_to "Log Out", logout_path, data: {turbo_method: :delete}  %></h2>
 </div>

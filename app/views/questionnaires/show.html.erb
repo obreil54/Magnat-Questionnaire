@@ -1,23 +1,28 @@
 <div class="card">
   <h1><%= @questionnaire.title %></h1>
-  <%= simple_form_for :answer, url: answers_path do |f| %>
+  <%= simple_form_for :answer, url: answers_path, html: { multipart: true } do |f| %>
+    <%= hidden_field_tag :questionnaire_id, @questionnaire.id %>
     <div data-controller="questionnaire">
       <% @questions.each_with_index do |question, index| %>
         <div data-questionnaire-target="question" class="<%= 'd-none' unless index.zero? %>">
           <h2><%= index + 1 %> <%= question.content %></h2>
           <% case question.question_type %>
           <% when 'text' %>
-            <%= f.input :response, as: :text, input_html: { name: "answers[#question.id]" } %>
+            <%= f.input :response, as: :text, input_html: { name: "answers[#{question.id}]" } %>
           <% when 'select' %>
-            <%= f.input :response, as: :select, collection: question.options, input_html: { name: "answers[#question.id]" } %>
+            <%= f.input :response, as: :select, collection: question.options, input_html: { name: "answers[#{question.id}]" } %>
           <% when 'photo' %>
-            <%= f.input :response, as: :file, input_html: { name: "answers[#question.id]"} %>
+            <%= f.input :response, as: :file, input_html: { accept: 'image/*', capture: 'camera', id:"photo_capture_#{index}", class: "d-none", name: "answers[#{question.id}]", data: { questionnaire_target: "source", action: "change->questionnaire#show" } } %>
+            <div data-questionnaire-target="preview" id="preview_<%= index %>" class="image-preview"></div>
+            <label for="photo_capture_<%= index %>">
+              <i class="fa fa-camera"></i>
+            </label>
           <% end %>
         </div>
       <% end %>
-
-      <button type="button" data-action="click->questionnaire#previous">Back</button>
-      <button type="button" data-action="click->questionnaire#next">Next</button><br>
+      <br><br>
+      <button type="button"  class="d-none" data-action="click->questionnaire#previous" data-questionnaire-target="back">Back</button>
+      <button type="button" data-action="click->questionnaire#next" data-questionnaire-target="next">Next</button><br>
       <%= f.button :submit, "Submit", class: "d-none", data: { questionnaire_target: "submit" } %>
     </div>
   <% end %>
