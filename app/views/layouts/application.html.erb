@@ -11,9 +11,15 @@
   </head>
 
   <body>
-    <% flash.each do |name, msg| %>
+  <% flash.each do |name, msg| %>
+    <% if name == 'notice' %>
+      <%= content_tag(:div, msg, class: "notice") %>
+    <% elsif name == 'alert' %>
+      <%= content_tag(:div, msg, class: "alert") %>
+    <% else %>
       <%= content_tag(:div, msg, class: "alert alert-#{name}") %>
     <% end %>
-    <%= yield %>
+  <% end %>
+  <%= yield %>
   </body>
 </html>

@@ -9,6 +9,6 @@ class UsersController < ApplicationController
   private
 
   def require_login
-    redirect_to root_path, alert: "You must be loggen in to access this page." unless session[:user_id]
+    redirect_to root_path, alert: "Вы должны войти в систему, чтобы получить доступ к этой странице." unless session[:user_id]
   end
 end
