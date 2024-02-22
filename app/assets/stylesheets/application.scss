@@ -10,8 +10,12 @@
 // Your CSS partials
 @import "components/index";
 @import "components/button";
+@import "components/button_red";
+@import "components/button_secondary";
 @import "components/form";
 @import "components/card";
+@import "components/notice";
+@import "components/alert";
 @import "components/image_preview";
 @import "pages/index";
 
@@ -25,4 +29,26 @@ body {
   height: 100vh;
   margin: 0;
   width: 100%;
+}
+
+.fa-camera {
+  color: #e5a60e;
+  background-color: $main;
+  padding: 16px;
+  font-size: 3rem;
+  border-radius: 50%;
+  margin-top: 8px;
+}
+
+h1 {
+  margin-bottom: 16px;
+}
+
+h2 {
+  margin: 8px 0;
+}
+
+li {
+  font-size: 16px;
+  font-weight: 500;
 }

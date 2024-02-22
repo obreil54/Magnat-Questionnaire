@@ -1,12 +1,14 @@
 <div class="card">
-  <h1>Welcome <%= @user.first_name %> <%= @user.last_name %>!</h1>
-  <h2>Your equipment:</h2>
+  <h1>Здраствуйте <%= @user.first_name %> <%= @user.last_name %>!</h1>
+  <h2>Ваша Техника:</h2>
   <% @equipment.each do |equipment| %>
-    <%= "#{equipment.category.capitalize} - #{equipment.make} #{equipment.model}" %>
+    <ul>
+      <li><%= "#{equipment.category.capitalize} - #{equipment.make} #{equipment.model}" %></li>
+    </ul>
   <% end %>
-  <h2>Your questionnaires</h2>
+  <h2>Ваши опросы:</h2>
   <% @questionnaires.each do |questionnaire| %>
-    <%= link_to questionnaire.title, questionnaire_path(questionnaire) %>
+    <p class="button"><%= link_to questionnaire.title, questionnaire_path(questionnaire) %></p>
   <% end %>
-  <h2><%= link_to "Log Out", logout_path, data: {turbo_method: :delete}  %></h2>
+  <h2 class="button-red"><%= link_to "Выйти", logout_path, data: {turbo_method: :delete}  %></h2>
 </div>

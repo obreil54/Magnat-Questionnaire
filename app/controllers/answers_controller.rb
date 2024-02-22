@@ -12,7 +12,7 @@ class AnswersController < ApplicationController
         end
         answer.save
       end
-      redirect_to user_profile_path, notice: "Your answers have been submitted"
+      redirect_to user_profile_path, notice: "Ваши ответы отправлены"
     end
   end
 end
