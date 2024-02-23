@@ -9,34 +9,41 @@ export default class extends Controller {
   }
 
   next() {
+    if (!this.validateResponse()) {
+      alert("Пожалуйста, дайте ответ на текущий вопрос.");
+      return;
+    }
     const currentIndex = this.currentQuestionIndex();
     if (currentIndex < this.questionTargets.length - 1) {
       this.showCurrentQuestion(currentIndex + 1);
     }
-    if (this.currentQuestionIndex() === this.questionTargets.length - 1) {
-      this.submitTarget.classList.remove("d-none");
-      this.nextTarget.classList.add("d-none");
-    } else if (this.currentQuestionIndex() !== 0) {
-      this.backTarget.classList.remove("d-none");
-    } else {
-      this.submitTarget.classList.add("d-none");
-      this.nextTarget.classList.remove("d-none");
-    }
+    this.updateButtonVisibility();
   }
+
 
   previous() {
     const currentIndex = this.currentQuestionIndex();
     if (currentIndex > 0) {
       this.showCurrentQuestion(currentIndex - 1);
     }
-    if (this.currentQuestionIndex() === this.questionTargets.length - 1) {
-      this.submitTarget.classList.remove("d-none");
-      this.nextTarget.classList.add("d-none");
-    } else if (this.currentQuestionIndex() === 0) {
-      this.backTarget.classList.add("d-none");
+    this.updateButtonVisibility();
+  }
+
+  updateButtonVisibility() {
+    const currentIndex = this.currentQuestionIndex();
+    this.backTarget.classList.toggle("d-none", currentIndex === 0);
+    this.nextTarget.classList.toggle("d-none", currentIndex === this.questionTargets.length - 1);
+    this.submitTarget.classList.toggle("d-none", currentIndex !== this.questionTargets.length - 1);
+  }
+
+  validateResponse() {
+    const currentIndex = this.currentQuestionIndex();
+    const currentQuestion = this.questionTargets[currentIndex];
+    const inputType = currentQuestion.querySelector("input, select, textarea").getAttribute("type");
+    if (inputType === "file") {
+      return currentQuestion.querySelector("input").files.length > 0;
     } else {
-      this.submitTarget.classList.add("d-none");
-      this.nextTarget.classList.remove("d-none");
+      return currentQuestion.querySelector("input, select, textarea").value.trim() !== "";
     }
   }
 
@@ -62,5 +69,22 @@ export default class extends Controller {
       };
       reader.readAsDataURL(file);
     }
+  }
+
+  submit(event) {
+    const isValid = this.element.checkValidity();
+    if (!isValid) {
+      event.preventDefault();
+      this.element.reportValidity();
+      const firstInvalidInput = this.element.querySelector(":invalid");
+      const questionIndex = this.findQuestionIndex(firstInvalidInput);
+      this.showCurrentQuestion(questionIndex);
+      alert("Пожалуйста, дайте ответ на все вопросы.");
+    }
+  }
+
+  findQuestionIndex(input) {
+    let parentQuestion = input.closest("[data-questionnaire-target='question']");
+    return this.questionTargets.indexOf(parentQuestion);
   }
 }
