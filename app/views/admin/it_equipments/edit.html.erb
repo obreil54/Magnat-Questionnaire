@@ -1,0 +1,14 @@
+<div class="card">
+  <h1>Изменить технику</h1>
+  <%= simple_form_for([:admin, @equipment], data: { controller: "toggle-class" }) do |f| %>
+    <%= f.input :category, as: :select, collection: %w[laptop keyboard monitor mouse], label: "Категория" %>
+    <%= f.input :make, label: "Марка" %>
+    <%= f.input :model, label: "Модель" %>
+    <%= f.input :description, as: :text, label: "Описание" %>
+    <%= f.input :status, as: :boolean, label: "Техника арендованна?", input_html: { data: {action: "change->toggle-class#toggleClass", toggle_class_target: "status" } } %>
+    <%= f.input :user_id, as: :select, collection: User.all.map { |u| [u.first_name + ' ' + u.last_name, u.id]}, label: "Сотрудник", wrapper_html: { class: "d-none", data: { toggle_class_target: "toggleable" } } %>
+    <%= f.input :loaned_at, as: :date, label: "Дата здачи", wrapper_html: { class: "d-none", data: { toggle_class_target: "toggleable" } } %>
+    <%= f.button :submit, "Изменить", class: "button" %>
+  <% end %>
+  <%= link_to 'Назад', :back, class: "button" %>
+</div>

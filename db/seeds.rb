@@ -21,6 +21,14 @@ user = User.create!(
   status: true
 )
 
+User.create!(
+  email: "admin@email.com",
+  first_name: "Admin",
+  last_name: "Admin",
+  status: true,
+  admin: true
+)
+
 laptop = ItEquipment.create!(
   category: "laptop",
   make: "MSI",

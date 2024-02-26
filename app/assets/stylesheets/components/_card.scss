@@ -1,17 +1,13 @@
-@media (max-width: 767px) {
-  // Your mobile styles here
-
-  .card {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background-color: white;
-    margin: auto;
-    padding: 40px;
-    margin: 0 40px;
-    text-align: center;
-    color: $main;
-    border-radius: 15px;
-  }
+.card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  margin: auto;
+  padding: 40px;
+  margin: 40px 40px;
+  text-align: center;
+  color: $main;
+  border-radius: 15px;
 }
