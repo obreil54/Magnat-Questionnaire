@@ -4,7 +4,7 @@ class User < ApplicationRecord
   has_many :answers, dependent: :destroy
   before_destroy :update_it_equipments_status
 
-  validates :first_name, :last_name, :email, :status, presence: true
+  validates :first_name, :last_name, :email, presence: true
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :first_name, :last_name, format: { with: /\A[a-zA-Z'’\-\s]+\z/, message: "only allows letters, hyphens, apostrophes, and spaces" }
 
@@ -16,6 +16,10 @@ class User < ApplicationRecord
 
   def send_login_code
     UserMailer.with(user: self).login_code_email.deliver_later
+  end
+
+  def admin?
+    admin
   end
 
   private

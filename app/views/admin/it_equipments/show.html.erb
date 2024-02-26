@@ -1,0 +1,17 @@
+<div class="card">
+  <h1><%= "#{@equipment.make} #{@equipment.model}" %></h1>
+  <h2>Информация</h2>
+  <p>Категория: <%= @equipment.category.capitalize %></p>
+  <p>Описание: <%= @equipment.description %></p>
+  <p>Статус: <%= @equipment.status? ? 'Арендован' : "Свободен" %></p>
+  <% if @equipment.status? %>
+    <p>Сотрудник: <%= link_to "#{@equipment.user.first_name} #{@equipment.user.last_name}", admin_user_path(@equipment.user) %></p>
+    <p>Дата Выдачи: <%= @equipment.loaned_at.strftime('%d/%m/%Y') %></p>
+  <% end %>
+  <h2>Действия</h2>
+  <div>
+    <%= link_to 'Изменить', edit_admin_it_equipment_path(@equipment), class: "button" %>
+    <%= link_to 'Удалить', admin_it_equipment_path(@equipment), data: { confirm: 'Вы уверены?', turbo_method: :delete }, class: "button-red" %>
+  </div>
+  <%= link_to 'Назад', :back, class: "button" %>
+</div>

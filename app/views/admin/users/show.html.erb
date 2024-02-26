@@ -1,0 +1,19 @@
+<div class="card">
+  <h1><%= @user.first_name %> <%= @user.last_name %></h1>
+  <h2>Информация</h2>
+  <p>Email: <%= @user.email %></p>
+  <p>Статус: <%= @user.status? ? 'Действующий' : "Не Действующий" %></p>
+  <p>Администратор: <%= @user.admin? ? 'Да' : "Нет" %></p>
+  <h2>Техника</h2>
+  <% @user.it_equipments.each do |equipment| %>
+    <ul>
+      <li><%= link_to "#{equipment.category.capitalize} - #{equipment.make} #{equipment.model}", admin_it_equipment_path(equipment) %></li>
+    </ul>
+  <% end %>
+  <h2>Действия</h2>
+  <div>
+    <%= link_to 'Изменить', edit_admin_user_path(@user), class: "button" %>
+    <%= link_to 'Удалить', admin_user_path(@user), data: { confirm: 'Вы уверены?', turbo_method: :delete }, class: "button-red" %>
+  </div>
+  <%= link_to 'Назад', :back, class: "button" %>
+</div>
