@@ -1,8 +1,7 @@
 <div class="card">
   <h1>Изменить сотрудника</h1>
   <%= simple_form_for([:admin, @user]) do |f| %>
-    <%= f.input :first_name, label: "Имя" %>
-    <%= f.input :last_name, label: "Фамилия" %>
+    <%= f.input :name, label: "ФИО" %>
     <%= f.input :email, label: "Email" %>
     <%= f.input :status, as: :boolean, label: "Активный сотрудник?" %>
     <%= f.input :admin, as: :boolean, label: "Администратор?" %>

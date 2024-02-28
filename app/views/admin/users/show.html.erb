@@ -1,13 +1,13 @@
 <div class="card">
-  <h1><%= @user.first_name %> <%= @user.last_name %></h1>
+  <h1><%= @user.name %></h1>
   <h2>Информация</h2>
   <p>Email: <%= @user.email %></p>
   <p>Статус: <%= @user.status? ? 'Действующий' : "Не Действующий" %></p>
   <p>Администратор: <%= @user.admin? ? 'Да' : "Нет" %></p>
   <h2>Техника</h2>
-  <% @user.it_equipments.each do |equipment| %>
+  <% @user.hardwares.each do |hardware| %>
     <ul>
-      <li><%= link_to "#{equipment.category.capitalize} - #{equipment.make} #{equipment.model}", admin_it_equipment_path(equipment) %></li>
+      <li><%= link_to "#{hardware.category_hard.name} - #{hardware.model}", admin_hardware_path(hardware) %></li>
     </ul>
   <% end %>
   <h2>Действия</h2>

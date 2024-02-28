@@ -14,7 +14,7 @@
       <% @users.each do |user| %>
         <tr>
           <td><%= user.email %></td>
-          <td><%= user.first_name %> <%= user.last_name %></td>
+          <td><%= user.name %></td>
           <td><%= user.status? ? 'Действующий' : "Не Действующий" %></td>
           <td>
             <%= link_to 'Показать', admin_user_path(user), class: "button" %>

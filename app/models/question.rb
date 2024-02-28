@@ -1,7 +1,9 @@
 class Question < ApplicationRecord
-  has_and_belongs_to_many :questionnaires
-  has_many :answers
+  has_many :answer_variants, dependent: :destroy
+  has_many :response_details, dependent: :destroy
+  belongs_to :question_type
+  belongs_to :category_hard
 
-  validates :content, :question_type, presence: true
-  validates :question_type, inclusion: { in: %w[text select photo] }
+  validates :name, :question_type, :category_hard, presence: true
+  validates :required, inclusion: { in: [true, false] }
 end

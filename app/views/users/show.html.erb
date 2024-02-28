@@ -1,14 +1,22 @@
 <div class="card">
-  <h1>Здраствуйте <%= @user.first_name %> <%= @user.last_name %>!</h1>
+  <h1>Здраствуйте, <%= @user.name %></h1>
   <h2>Ваша Техника:</h2>
-  <% @equipment.each do |equipment| %>
+  <% @hardware.each do |hardware| %>
     <ul>
-      <li><%= "#{equipment.category.capitalize} - #{equipment.make} #{equipment.model}" %></li>
+      <li><%= "#{hardware.category_hard.name} - #{hardware.model}" %></li>
     </ul>
   <% end %>
-  <h2>Ваши опросы:</h2>
-  <% @questionnaires.each do |questionnaire| %>
-    <p class="button"><%= link_to questionnaire.title, questionnaire_path(questionnaire) %></p>
+  <% if @questionnaire.present? %>
+    <% user_responses = @questionnaire.responses.where(user_id: @user.id) %>
+    <% if user_responses.empty? %>
+      <h2>Ваши опросы:</h2>
+      <p class="button"><%= link_to @questionnaire.name, questionnaire_path(@questionnaire) %></p>
+    <% else %>
+      <h2>Пройденные опросы:</h2>
+      <p>Опрос <%= @questionnaire.name %> уже был пройден.</p>
+    <% end %>
+  <% else %>
+    <p>Нет доступного опроса на текущий момент.</p>
   <% end %>
   <% if @user.admin? %>
     <h2 class="button"><%= link_to "Панель администратора", admin_dashboard_path %></h2>

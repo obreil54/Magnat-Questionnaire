@@ -1,12 +1,12 @@
 class User < ApplicationRecord
   before_create :generate_code
-  has_many :it_equipments
-  has_many :answers, dependent: :destroy
-  before_destroy :update_it_equipments_status
+  has_many :hardwares
+  has_many :responses, dependent: :destroy
+  before_destroy :update_hardwares_status
 
-  validates :first_name, :last_name, :email, presence: true
+  validates :name, :email, presence: true
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }
-  validates :first_name, :last_name, format: { with: /\A[a-zA-Z'’\-\s]+\z/, message: "only allows letters, hyphens, apostrophes, and spaces" }
+  validates :name, format: { with: /\A[a-zA-Z'’\-\s]+\z/, message: "only allows letters, hyphens, apostrophes, and spaces" }
 
 
 
@@ -24,7 +24,7 @@ class User < ApplicationRecord
 
   private
 
-  def update_it_equipments_status
-    it_equipments.update_all(status: false, loaned_at: nil, user_id: nil)
+  def update_hardwares_status
+    hardwares.update_all(status: false, loaned_at: nil, user_id: nil)
   end
 end

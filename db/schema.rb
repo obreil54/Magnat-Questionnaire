@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_26_103914) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_28_152802) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -42,79 +42,102 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_26_103914) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
-  create_table "answers", force: :cascade do |t|
-    t.text "response"
+  create_table "answer_variants", force: :cascade do |t|
+    t.string "name"
     t.bigint "question_id", null: false
-    t.bigint "user_id", null: false
-    t.bigint "questionnaire_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["question_id"], name: "index_answers_on_question_id"
-    t.index ["questionnaire_id"], name: "index_answers_on_questionnaire_id"
-    t.index ["user_id"], name: "index_answers_on_user_id"
+    t.index ["question_id"], name: "index_answer_variants_on_question_id"
   end
 
-  create_table "equipment_questionnaires", force: :cascade do |t|
-    t.bigint "it_equipment_id", null: false
-    t.bigint "questionnaire_id", null: false
+  create_table "category_hards", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["it_equipment_id"], name: "index_equipment_questionnaires_on_it_equipment_id"
-    t.index ["questionnaire_id"], name: "index_equipment_questionnaires_on_questionnaire_id"
+    t.string "name"
   end
 
-  create_table "it_equipments", force: :cascade do |t|
-    t.string "category"
-    t.string "make"
+  create_table "hardwares", force: :cascade do |t|
     t.string "model"
-    t.text "description"
     t.datetime "loaned_at"
     t.boolean "status", default: false
     t.bigint "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_it_equipments_on_user_id"
+    t.string "series"
+    t.bigint "category_hard_id"
+    t.index ["category_hard_id"], name: "index_hardwares_on_category_hard_id"
+    t.index ["user_id"], name: "index_hardwares_on_user_id"
+  end
+
+  create_table "question_types", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "questionnaires", force: :cascade do |t|
-    t.string "title"
-    t.text "description"
+    t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-  end
-
-  create_table "questionnaires_questions", id: false, force: :cascade do |t|
-    t.bigint "questionnaire_id", null: false
-    t.bigint "question_id", null: false
-    t.index ["question_id", "questionnaire_id"], name: "idx_on_question_id_questionnaire_id_09b247bfcd"
-    t.index ["questionnaire_id", "question_id"], name: "idx_on_questionnaire_id_question_id_ed7ccb1efe"
+    t.date "start_date"
+    t.date "end_date"
+    t.boolean "status", default: false
   end
 
   create_table "questions", force: :cascade do |t|
-    t.text "content"
-    t.string "question_type"
+    t.text "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.text "options", default: [], array: true
+    t.bigint "category_hard_id"
+    t.bigint "question_type_id"
+    t.boolean "required", default: true
+    t.index ["category_hard_id"], name: "index_questions_on_category_hard_id"
+    t.index ["question_type_id"], name: "index_questions_on_question_type_id"
+  end
+
+  create_table "response_details", force: :cascade do |t|
+    t.bigint "response_id", null: false
+    t.bigint "hardware_id", null: false
+    t.bigint "question_id", null: false
+    t.text "answer"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["hardware_id"], name: "index_response_details_on_hardware_id"
+    t.index ["question_id"], name: "index_response_details_on_question_id"
+    t.index ["response_id"], name: "index_response_details_on_response_id"
+  end
+
+  create_table "responses", force: :cascade do |t|
+    t.string "name"
+    t.bigint "user_id", null: false
+    t.bigint "questionnaire_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.date "end_date"
+    t.index ["questionnaire_id"], name: "index_responses_on_questionnaire_id"
+    t.index ["user_id"], name: "index_responses_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
-    t.string "first_name"
-    t.string "last_name"
     t.string "email"
     t.string "code"
     t.boolean "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "admin", default: false, null: false
+    t.string "name"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "answers", "questionnaires"
-  add_foreign_key "answers", "questions"
-  add_foreign_key "answers", "users"
-  add_foreign_key "equipment_questionnaires", "it_equipments"
-  add_foreign_key "equipment_questionnaires", "questionnaires"
-  add_foreign_key "it_equipments", "users"
+  add_foreign_key "answer_variants", "questions"
+  add_foreign_key "hardwares", "category_hards"
+  add_foreign_key "hardwares", "users"
+  add_foreign_key "questions", "category_hards"
+  add_foreign_key "questions", "question_types"
+  add_foreign_key "response_details", "hardwares"
+  add_foreign_key "response_details", "questions"
+  add_foreign_key "response_details", "responses"
+  add_foreign_key "responses", "questionnaires"
+  add_foreign_key "responses", "users"
 end

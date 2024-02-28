@@ -1,8 +1,17 @@
 class Questionnaire < ApplicationRecord
-  has_many :equipment_questionnaires, dependent: :destroy
-  has_many :it_equipments, through: :equipment_questionnaires
-  has_and_belongs_to_many :questions
-  has_many :answers
+  has_many :responses
 
-  validates :title, :description, presence: true
+  validates :name, :start_date, :end_date, presence: true
+
+  before_save :set_status_based_on_dates
+
+  private
+
+  def set_status_based_on_dates
+    if start_date.present? && end_date.present?
+      self.status = (start_date <= Date.today) && (end_date >= Date.today)
+    else
+      self.status = false
+    end
+  end
 end

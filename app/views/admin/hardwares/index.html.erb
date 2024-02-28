@@ -1,0 +1,63 @@
+<div class="card">
+  <h1>Техника</h1>
+  <%= link_to 'Добавить технику', new_admin_hardware_path, class: "button" %>
+  <h2>Арендованная Техника</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Категория</th>
+        <th>Модель</th>
+        <th>Серийный номер</th>
+        <th>Сотрудник</th>
+        <th>Дата Выдачи</th>
+        <th>Действия</th>
+      </tr>
+    </thead>
+    <% @hardware.each do |hardware| %>
+      <% if hardware.status? %>
+        <tbody>
+          <tr>
+            <td><%= hardware.category_hard.name %></td>
+            <td><%= hardware.model %></td>
+            <td><%= hardware.series %></td>
+            <td><%= link_to hardware.user.name, admin_user_path(hardware.user) %></td>
+            <td><%= hardware.loaned_at.strftime('%d/%m/%Y') %></td>
+            <td>
+              <%= link_to 'Показать', admin_hardware_path(hardware), class: "button" %>
+              <%= link_to 'Изменить', edit_admin_hardware_path(hardware), class: "button" %>
+              <%= link_to 'Удалить', admin_hardware_path(hardware), data: { confirm: 'Вы уверены?', turbo_method: :delete }, class: "button-red" %>
+            </td>
+          </tr>
+        </tbody>
+      <% end %>
+    <% end %>
+  </table>
+  <h2>Свободная Техника</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Категория</th>
+        <th>Модель</th>
+        <th>Серийный номер</th>
+        <th>Действия</th>
+      </tr>
+    </thead>
+    <% @hardware.each do |hardware| %>
+      <% if !hardware.status? %>
+        <tbody>
+          <tr>
+            <td><%= hardware.category_hard.name %></td>
+            <td><%= hardware.model %></td>
+            <td><%= hardware.series %></td>
+            <td>
+              <%= link_to 'Показать', admin_hardware_path(hardware), class: "button" %>
+              <%= link_to 'Изменить', edit_admin_hardware_path(hardware), class: "button" %>
+              <%= link_to 'Удалить', admin_hardware_path(hardware), data: { confirm: 'Вы уверены?', turbo_method: :delete }, class: "button-red" %>
+            </td>
+          </tr>
+        </tbody>
+      <% end %>
+    <% end %>
+  </table>
+  <%= link_to 'Назад', admin_dashboard_path, class: "button" %>
+</div>
