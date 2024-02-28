@@ -4,14 +4,16 @@ class SessionsController < ApplicationController
 
   def create
     @user = User.find_by(email: params[:session][:email])
-    if @user
+    if !@user
+      redirect_to login_path, alert: "Пользователь с email #{params[:session][:email]} не зарегистрирован в системе!"
+    elsif @user.status == true
       session[:verification_email] = @user.email
       @user.generate_code
       @user.save
       @user.send_login_code
-      redirect_to verify_path, notice: "Код был отправлен на вашу электронную почту"
+      redirect_to verify_path, notice: "Код был отправлен на #{@user.email}."
     else
-      redirect_to login_path, alert: "В базе данных нет такого адреса электронной почты."
+      redirect_to login_path, alert: "Для пользователя с email #{@user.email} доступ закрыт."
     end
   end
 

@@ -2,8 +2,8 @@ class UsersController < ApplicationController
   before_action :require_login
   def show
     @user = current_user
-    @equipment = current_user.it_equipments
-    @questionnaires = @equipment.flat_map(&:questionnaires)
+    @hardware = current_user.hardwares
+    @questionnaire = Questionnaire.find_by(status: true)
   end
 
   private

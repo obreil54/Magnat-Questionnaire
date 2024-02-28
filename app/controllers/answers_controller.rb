@@ -1,4 +1,4 @@
-class AnswersController < ApplicationController
+class ResponsesController < ApplicationController
   def create
     questionnaire_id = params[:questionnaire_id]
     questionnaire = Questionnaire.find(questionnaire_id)

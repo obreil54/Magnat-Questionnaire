@@ -9,58 +9,76 @@
 #   end
 
 User.destroy_all
-ItEquipment.destroy_all
+Hardware.destroy_all
+CategoryHard.destroy_all
+QuestionType.destroy_all
 Questionnaire.destroy_all
-EquipmentQuestionnaire.destroy_all
 Question.destroy_all
 
 user = User.create!(
   email: "obreil54@gmail.com",
-  first_name: "Ilya",
-  last_name: "Obretetskiy",
+  name: "Ilya Obretetskiy",
   status: true
 )
 
 User.create!(
   email: "admin@email.com",
-  first_name: "Admin",
-  last_name: "Admin",
+  name: "Admin",
   status: true,
   admin: true
 )
 
-laptop = ItEquipment.create!(
-  category: "laptop",
-  make: "MSI",
-  model: "Stealth 15M",
-  description: "Some minor damage and battery only functions when plugged in",
+laptop_category = CategoryHard.create!(name: "Ноутбук")
+
+CategoryHard.create!(name: "Монитор")
+CategoryHard.create!(name: "Планшет")
+CategoryHard.create!(name: "Принтер")
+
+laptop = Hardware.create!(
+  category_hard: laptop_category,
+  model: "MSI Stealth 15M",
+  series: "A11UEK-009RU",
   loaned_at: DateTime.now,
   status: true,
   user: user
 )
 
+text_type = QuestionType.create!(name: "Произвольный Ответ")
+select_type = QuestionType.create!(name: "Выбор Значений")
+photo_type = QuestionType.create!(name: "Фото")
+
+
 questionnaire = Questionnaire.create!(
-  title: "Bi-Annual check of your #{laptop.make} #{laptop.model} #{laptop.category}",
-  description: "Please fill out this questionnaire to ensure that your laptop is in good condition",
+  name: "Опрос состояния техники весна 2024",
+  start_date: Date.today,
+  end_date: Date.today + 1.month,
 )
 
-EquipmentQuestionnaire.create!(
-  it_equipment: laptop,
-  questionnaire: questionnaire
+Question.create!(
+    name: "Сделай фото ноутбука с открытой крышкой",
+    category_hard: laptop_category,
+    question_type: photo_type,
+    required: true
+)
+select_question = Question.create!(
+    name: "Оцени качество работы ноутбука",
+    category_hard: laptop_category,
+    question_type: select_type,
+    required: true
+)
+Question.create!(
+    name: "Напиши детальный комментарий, если есть замечания к ноутбуку",
+    category_hard: laptop_category,
+    question_type: text_type,
+    required: true
 )
 
-questionnaire.questions.create!([
-  {
-    content: "Please describe any issues you are having with the equipment",
-    question_type: "text"
-  },
-  {
-    content: "Please rate the condition of your device?",
-    question_type: "select",
-    options: ["Great", "Good", "OK", "Poor", "Not Working"]
-  },
-  {
-    content: "Please take a photo of the screen",
-    question_type: "photo"
-  }
-])
+AnswerVariant.create!(
+  name: "Удовлетворительно",
+  question: select_question
+)
+
+AnswerVariant.create!(
+  name: "Hе удовлетворительно",
+  question: select_question
+)
