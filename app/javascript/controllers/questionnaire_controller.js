@@ -3,6 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 // Connects to data-controller="questionnaire"
 export default class extends Controller {
   static targets = ["question", "submit", "next", "back", "source", "preview"]
+  static values = { responseDetailsPath: String }
 
   initialize() {
     this.showCurrentQuestion(0);
@@ -14,10 +15,16 @@ export default class extends Controller {
       return;
     }
     const currentIndex = this.currentQuestionIndex();
-    if (currentIndex < this.questionTargets.length - 1) {
-      this.showCurrentQuestion(currentIndex + 1);
-    }
-    this.updateButtonVisibility();
+    this.sendResponse().then(response => {
+      if (response.ok) {
+        if (currentIndex < this.questionTargets.length - 1) {
+          this.showCurrentQuestion(currentIndex + 1);
+        }
+        this.updateButtonVisibility();
+      } else {
+        alert("Произошла ошибка. Пожалуйста, попробуйте еще раз.");
+      }
+    });
   }
 
 
@@ -72,15 +79,40 @@ export default class extends Controller {
   }
 
   submit(event) {
-    const isValid = this.element.checkValidity();
-    if (!isValid) {
-      event.preventDefault();
-      this.element.reportValidity();
-      const firstInvalidInput = this.element.querySelector(":invalid");
-      const questionIndex = this.findQuestionIndex(firstInvalidInput);
-      this.showCurrentQuestion(questionIndex);
-      alert("Пожалуйста, дайте ответ на все вопросы.");
+    event.preventDefault();
+    if (!this.validateResponse) {
+      alert("Пожалуйста, дайте ответ на текущий вопрос.");
+      return;
     }
+    const isFinal = true;
+    this.sendResponse(isFinal).then(() => {
+      window.location.href = "/profile";
+    }).catch(() => {
+      alert("Произошла ошибка. Пожалуйста, попробуйте еще раз.");
+    });
+  }
+
+  sendResponse(isFinal = false) {
+    const currentIndex = this.currentQuestionIndex();
+    const formData = new FormData(this.element);
+    const currentQuestion = this.questionTargets[currentIndex];
+    const input = currentQuestion.querySelector("input, select, textarea");
+
+    formData.append("answer", input.value);
+    formData.append("question_id", currentQuestion.dataset.itemQuestionId);
+    formData.append("hardware_id", currentQuestion.dataset.itemHardwareId);
+    formData.append("questionnaire_id", currentQuestion.dataset.itemQuestionnaireId);
+    if (isFinal) {
+      formData.append("is_final", true);
+    }
+
+    return fetch(this.responseDetailsPathValue, {
+      method: 'POST',
+      headers: {
+        'X-CSRF-Token': document.querySelector("[name='csrf-token']").content,
+      },
+      body: formData
+    });
   }
 
   findQuestionIndex(input) {

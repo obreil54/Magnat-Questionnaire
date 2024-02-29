@@ -1,18 +1,19 @@
 <div class="card">
-  <h1><%= @questionnaire.title %></h1>
-  <%= simple_form_for :answer, url: answers_path, html: { multipart: true, "data-controller": "questionnaire", "data-action": "submit->questionnaire#submit" } do |f| %>
+  <h1><%= @questionnaire.name %></h1>
+  <%= simple_form_for :response_detail, url: response_details_path, html: { multipart: true, "data-controller": "questionnaire", "data-action": "submit->questionnaire#submit", "data-questionnaire-response-details-path-value": response_details_path } do |f| %>
     <%= hidden_field_tag :questionnaire_id, @questionnaire.id %>
     <div>
-      <% @questions.each_with_index do |question, index| %>
-        <div data-questionnaire-target="question" class="<%= 'd-none' unless index.zero? %>">
-          <h2><%= index + 1 %>. <%= question.content %></h2>
-          <% case question.question_type %>
-          <% when 'text' %>
-            <%= f.input :response, as: :text, label: false, required: true, input_html: { name: "answers[#{question.id}]" } %>
-          <% when 'select' %>
-            <%= f.input :response, as: :select, label: false, required: true, collection: question.options, input_html: { name: "answers[#{question.id}]" } %>
-          <% when 'photo' %>
-            <%= f.input :response, as: :file, required: true, label: false, input_html: { accept: 'image/*', capture: 'camera', id:"photo_capture_#{index}", class: "d-none", name: "answers[#{question.id}]", data: { questionnaire_target: "source", action: "change->questionnaire#show" } } %>
+      <% @user_questionnaire_questions.each_with_index do |item, index| %>
+        <div data-questionnaire-target="question" data-item-question-id="<%= item.question_id %>" data-item-hardware-id="<%= item.hardware_id %>" data-item-questionnaire-id="<%= @questionnaire.id %>" class="<%= 'd-none' unless index.zero? %>">
+          <h2><%= item.model %></h2>
+          <h2><%= index + 1 %>. <%= item.question %></h2>
+          <% case item.question_type %>
+          <% when 'Произвольный Ответ' %>
+            <%= f.input "response_details_attributes[#{item.question_id}][answer]", as: :text, label: false, required: item.required %>
+          <% when 'Выбор Значений' %>
+            <%= f.input "response_details_attributes[#{item.question_id}][answer]", as: :select, label: false, required: item.required, collection: Question.find(item.question_id).answer_variants, value_method: :name %>
+          <% when 'Фото' %>
+            <%= f.input :image, as: :file, required: item.required, label: false, input_html: { accept: 'image/*', capture: 'camera', id:"photo_capture_#{index}", class: "d-none", data: { questionnaire_target: "source", action: "change->questionnaire#show" } } %>
             <div data-questionnaire-target="preview" id="preview_<%= index %>" class="image-preview"></div>
             <label for="photo_capture_<%= index %>">
               <i class="fa fa-camera"></i>

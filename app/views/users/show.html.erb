@@ -8,12 +8,12 @@
   <% end %>
   <% if @questionnaire.present? %>
     <% user_responses = @questionnaire.responses.where(user_id: @user.id) %>
-    <% if user_responses.empty? %>
+    <% if !user_responses.present? || !user_responses[0].end_date %>
       <h2>Ваши опросы:</h2>
       <p class="button"><%= link_to @questionnaire.name, questionnaire_path(@questionnaire) %></p>
-    <% else %>
+    <% else user_responses.present? %>
       <h2>Пройденные опросы:</h2>
-      <p>Опрос <%= @questionnaire.name %> уже был пройден.</p>
+      <p>Опрос - <%= @questionnaire.name %> уже был пройден.</p>
     <% end %>
   <% else %>
     <p>Нет доступного опроса на текущий момент.</p>

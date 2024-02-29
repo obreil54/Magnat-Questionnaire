@@ -14,6 +14,9 @@ CategoryHard.destroy_all
 QuestionType.destroy_all
 Questionnaire.destroy_all
 Question.destroy_all
+AnswerVariant.destroy_all
+Response.destroy_all
+ResponseDetail.destroy_all
 
 user = User.create!(
   email: "obreil54@gmail.com",
@@ -60,6 +63,14 @@ Question.create!(
     question_type: photo_type,
     required: true
 )
+
+Question.create!(
+  name: "Сделай фото asdasdasf с открытой крышкой",
+  category_hard: laptop_category,
+  question_type: photo_type,
+  required: true
+)
+
 select_question = Question.create!(
     name: "Оцени качество работы ноутбука",
     category_hard: laptop_category,
