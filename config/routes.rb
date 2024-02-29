@@ -6,7 +6,7 @@ Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   resources :sessions, only: [:new, :create, :destroy]
   resources :questionnaires, only: [:show]
-  resources :answers, only: [:create]
+  resources :response_details, only: [:create, :update]
   get 'login', to: 'sessions#new', as: :login
   post 'login', to: 'sessions#create'
   get 'verify', to: 'sessions#verify'
