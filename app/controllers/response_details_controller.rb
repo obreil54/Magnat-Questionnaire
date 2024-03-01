@@ -7,15 +7,18 @@ class ResponseDetailsController < ApplicationController
     hardware_id = params[:hardware_id]
 
     response = Response.find_by(questionnaire_id: questionnaire_id, user_id: current_user.id)
-
-    p "params = #{params}"
     response_detail = response.response_details.find_or_initialize_by(question_id: question_id, hardware_id: hardware_id)
 
     image_file = params.dig(:response_detail, :image)
+    if image_file.present?
+      response_detail.image.attach(image_file)
+      response_detail.answer = response_detail.image.url
+    end
 
-    response_detail.image.attach(image_file) if image_file.present?
+    if answer.present? && answer != response_detail.answer && !image_file.present?
+      response_detail.answer = answer
+    end
 
-    image_file.present? ? response_detail.answer = response_detail.image.url : response_detail.answer = answer
 
     if params[:is_final] == "true"
       response.end_date = Date.today

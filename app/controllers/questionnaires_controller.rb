@@ -4,5 +4,6 @@ class QuestionnairesController < ApplicationController
     @questionnaire = Questionnaire.find(params[:id])
     Response.create!(questionnaire: @questionnaire, user: current_user) unless Response.where(questionnaire: @questionnaire, user: current_user).exists?
     @response = Response.find_by(questionnaire: @questionnaire, user: current_user)
+    @response_details = @response&.response_details || []
   end
 end

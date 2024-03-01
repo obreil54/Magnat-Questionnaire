@@ -20,7 +20,7 @@
 @import "pages/index";
 
 body {
-  background-color: $main;
+  background-color: $white;
   font-family: $body-font;
   display: flex;
   flex-direction: column;
@@ -32,8 +32,8 @@ body {
 }
 
 .fa-camera {
-  color: #e5a60e;
-  background-color: $main;
+  color: white;
+  background-color: #e5a60e;
   padding: 16px;
   font-size: 3rem;
   border-radius: 50%;

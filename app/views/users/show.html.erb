@@ -6,7 +6,7 @@
       <li><%= "#{hardware.category_hard.name} - #{hardware.model}" %></li>
     </ul>
   <% end %>
-  <% if @questionnaire.present? %>
+  <% if @questionnaire.present? && @hardware.present? %>
     <% user_responses = @questionnaire.responses.where(user_id: @user.id) %>
     <% if !user_responses.present? || !user_responses[0].end_date %>
       <h2>Ваши опросы:</h2>
@@ -16,7 +16,7 @@
       <p>Опрос - <%= @questionnaire.name %> уже был пройден.</p>
     <% end %>
   <% else %>
-    <p>Нет доступного опроса на текущий момент.</p>
+    <h2>Нет доступного опроса на текущий момент.</h2>
   <% end %>
   <% if @user.admin? %>
     <h2 class="button"><%= link_to "Панель администратора", admin_dashboard_path %></h2>
