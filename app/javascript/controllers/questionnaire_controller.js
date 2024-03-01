@@ -57,7 +57,21 @@ export default class extends Controller {
   showCurrentQuestion(index) {
     this.questionTargets.forEach((element, i) => {
       element.classList.toggle("d-none", i !== index);
+      if (i === index && element.dataset.existingImage) {
+        this.updateImagePreview(element);
+      }
     })
+  }
+
+  updateImagePreview(questionElement) {
+    console.log("Updating question image preview.")
+    const existingImageUrl = questionElement.dataset.existingImage;
+    const previewTarget = questionElement.querySelector("[data-questionnaire-target='preview");
+    if (existingImageUrl) {
+      previewTarget.innerHTML = `<img src="${existingImageUrl}">`;
+    } else {
+      previewTarget.innerHTML = '';
+    }
   }
 
   currentQuestionIndex() {
