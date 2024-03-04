@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+
+  mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
   get 'answers/create'
   get 'questionnaires/show'
   get 'users/show'
@@ -13,11 +15,6 @@ Rails.application.routes.draw do
   post 'verify', to: 'sessions#verify_code'
   get 'profile', to: 'users#show', as: 'user_profile'
   delete 'logout', to: 'sessions#destroy', as: :logout
-  namespace :admin do
-    get 'dashboard', to: 'admin#dashboard'
-    resources :users
-    resources :hardwares
-  end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
