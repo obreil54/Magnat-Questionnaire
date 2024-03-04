@@ -5,6 +5,7 @@ class ResponseDetailsController < ApplicationController
     answer = params[:answer]
     questionnaire_id = params[:questionnaire_id]
     hardware_id = params[:hardware_id]
+    keep_existing_image = params[:keep_existing_image] == "true"
 
     response = Response.find_by(questionnaire_id: questionnaire_id, user_id: current_user.id)
     response_detail = response.response_details.find_or_initialize_by(question_id: question_id, hardware_id: hardware_id)
@@ -13,10 +14,12 @@ class ResponseDetailsController < ApplicationController
     if image_file.present?
       response_detail.image.attach(image_file)
       response_detail.answer = response_detail.image.url
-    end
-
-    if answer.present? && answer != response_detail.answer && !image_file.present?
-      response_detail.answer = answer
+    elsif keep_existing_image && response_detail.image.attached?
+      response_detail.answer = response_detail.image.url unless response_detail.answer.present?
+    else
+      if answer.present? && !image_file.present?
+        response_detail.answer = answer
+      end
     end
 
 
