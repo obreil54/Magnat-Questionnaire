@@ -47,10 +47,12 @@ export default class extends Controller {
     const currentIndex = this.currentQuestionIndex();
     const currentQuestion = this.questionTargets[currentIndex];
     const inputType = currentQuestion.querySelector("input, select, textarea").getAttribute("type");
-    if (inputType === "file") {
-      return currentQuestion.querySelector("input").files.length > 0;
-    } else {
+    if (inputType !== "file") {
       return currentQuestion.querySelector("input, select, textarea").value.trim() !== "";
+    } else {
+      const fileSelected = currentQuestion.querySelector("input[type='file']").files.length > 0;
+      const existingImage = currentQuestion.dataset.existingImage && currentQuestion.dataset.existingImage.trim() !== "";
+      return fileSelected || existingImage;
     }
   }
 
@@ -94,7 +96,7 @@ export default class extends Controller {
 
   submit(event) {
     event.preventDefault();
-    if (!this.validateResponse) {
+    if (!this.validateResponse()) {
       alert("Пожалуйста, дайте ответ на текущий вопрос.");
       return;
     }
@@ -111,6 +113,7 @@ export default class extends Controller {
     const formData = new FormData(this.element);
     const currentQuestion = this.questionTargets[currentIndex];
     const input = currentQuestion.querySelector("input, select, textarea");
+    const inputType = input.getAttribute("type");
 
     formData.append("answer", input.value);
     formData.append("question_id", currentQuestion.dataset.itemQuestionId);
@@ -118,6 +121,11 @@ export default class extends Controller {
     formData.append("questionnaire_id", currentQuestion.dataset.itemQuestionnaireId);
     if (isFinal) {
       formData.append("is_final", true);
+    }
+
+
+    if (inputType === "file" && !input.files.length && currentQuestion.dataset.existingImage) {
+      formData.append("keep_existing_image", "true");
     }
 
     return fetch(this.responseDetailsPathValue, {
