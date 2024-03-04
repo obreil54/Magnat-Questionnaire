@@ -19,7 +19,7 @@
     <h2>Нет доступного опроса на текущий момент.</h2>
   <% end %>
   <% if @user.admin? %>
-    <h2 class="button"><%= link_to "Панель администратора", admin_dashboard_path %></h2>
+    <h2 class="button"><%= link_to "Панель администратора", rails_admin_path %></h2>
   <% end %>
   <h2 class="button-red"><%= link_to "Выйти", logout_path, data: {turbo_method: :delete}  %></h2>
 </div>

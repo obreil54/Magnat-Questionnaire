@@ -51,6 +51,9 @@ gem "simple_form", github: "heartcombo/simple_form"
 gem "sassc-rails"
 gem "cloudinary"
 gem "whenever", require: false
+gem "rails_admin", '~> 3.0'
+gem "rails-i18n"
+
 
 group :development, :test do
   gem "dotenv-rails"
