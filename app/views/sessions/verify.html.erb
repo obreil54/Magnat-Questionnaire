@@ -3,6 +3,10 @@
   <div class="form">
     <%= simple_form_for :verification, url: verify_path, method: :post do |f| %>
       <%= f.input :code, required: true, label: "Код", input_html: { maxlength: 4 } %>
+      <div class="field">
+        <%= f.check_box :remember_me %>
+        <%= f.label :remember_me, "Запомнить меня" %>
+      </div>
       <h2 class="button"><%= f.button :submit, "Войти" %></h2>
     <% end %>
   </div>
