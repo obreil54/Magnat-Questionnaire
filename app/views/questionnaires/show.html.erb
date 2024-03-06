@@ -11,13 +11,13 @@
           <% case item.question_type %>
           <% when 'Произвольный Ответ' %>
             <%= f.input "response_details_attributes[#{item.question_id}][answer]", as: :text, label: false, required: item.required, input_html: { value: existing_response&.answer } %>
-            <%# <div class="error-message" data-questionnaire-target="errorMessage" class="d-none"></div> %>
+            <div class="error-message" data-questionnaire-target="error" style="display: none; color: red"></div>
           <% when 'Выбор Значений' %>
             <%= f.input "response_details_attributes[#{item.question_id}][answer]", as: :select, label: false, required: item.required, collection: Question.find(item.question_id).answer_variants, value_method: :name, selected: existing_response&.answer %>
-            <%# <div class="error-message" data-questionnaire-target="errorMessage" class="d-none"></div> %>
+            <div class="error-message" data-questionnaire-target="error" style="display: none; color: red"></div>
           <% when 'Фото' %>
             <%= f.input :image, as: :file, required: item.required, label: false, input_html: { accept: 'image/*', capture: 'camera', id:"photo_capture_#{index}", class: "d-none", data: { questionnaire_target: "source", action: "change->questionnaire#show", question_type: "photo" } } %>
-            <%# <div class="error-message" data-questionnaire-target="errorMessage" class="d-none"></div> %>
+            <div class="error-message" data-questionnaire-target="error" style="display: none; color: red"></div>
             <div data-questionnaire-target="preview" id="preview_<%= index %>" class="image-preview"></div>
             <label for="photo_capture_<%= index %>">
               <i class="fa fa-camera"></i>

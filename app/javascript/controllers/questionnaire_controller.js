@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 // Connects to data-controller="questionnaire"
 export default class extends Controller {
-  static targets = ["question", "submit", "next", "back", "source", "preview"]
+  static targets = ["question", "submit", "next", "back", "source", "preview", "error"]
   static values = { responseDetailsPath: String }
 
   initialize() {
@@ -11,7 +11,6 @@ export default class extends Controller {
 
   next() {
     if (!this.validateResponse()) {
-      alert("Пожалуйста, дайте ответ на текущий вопрос.");
       return;
     }
     const currentIndex = this.currentQuestionIndex();
@@ -46,19 +45,40 @@ export default class extends Controller {
   validateResponse() {
     const currentIndex = this.currentQuestionIndex();
     const currentQuestion = this.questionTargets[currentIndex];
-    const inputType = currentQuestion.querySelector("input, select, textarea").getAttribute("type");
+    const input = currentQuestion.querySelector("input, select, textarea");
+    const isRequired = input.required;
+    const inputType = input.getAttribute("type");
+    let isValid;
+
     if (inputType !== "file") {
-      return currentQuestion.querySelector("input, select, textarea").value.trim() !== "";
+      isValid = input.value.trim() !== "";
     } else {
-      const fileSelected = currentQuestion.querySelector("input[type='file']").files.length > 0;
+      const fileSelected = input.files.length > 0;
       const existingImage = currentQuestion.dataset.existingImage && currentQuestion.dataset.existingImage.trim() !== "";
-      return fileSelected || existingImage;
+      isValid = fileSelected || existingImage;
+    }
+
+    const errorMessageDiv = this.errorTargets[currentIndex];
+    console.log(isValid)
+    console.log(isRequired)
+    console.log(errorMessageDiv)
+    if (!isValid && isRequired) {
+      errorMessageDiv.style.display = "block";
+      errorMessageDiv.textContent = "Пожалуйста, дайте ответ на текущий вопрос.";
+      return false
+    } else {
+      errorMessageDiv.style.display = "none";
+      return true
     }
   }
 
   showCurrentQuestion(index) {
     this.questionTargets.forEach((element, i) => {
       element.classList.toggle("d-none", i !== index);
+      const errorMessageDiv = this.errorTargets[i];
+      if (errorMessageDiv) {
+        errorMessageDiv.style.display = "none";
+      }
       if (i === index && element.dataset.existingImage) {
         this.updateImagePreview(element);
       }
@@ -97,7 +117,6 @@ export default class extends Controller {
   submit(event) {
     event.preventDefault();
     if (!this.validateResponse()) {
-      alert("Пожалуйста, дайте ответ на текущий вопрос.");
       return;
     }
     const isFinal = true;
