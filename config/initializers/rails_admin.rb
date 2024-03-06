@@ -23,6 +23,9 @@ RailsAdmin.config do |config|
   ## == Gravatar integration ==
   ## To disable Gravatar integration in Navigation Bar set to false
   # config.show_gravatar = false
+  def current_user
+    @current_user ||= User.find(session[:user_id]) if session[:user_id]
+  end
 
   config.authenticate_with do
     unless current_user && current_user.admin?
@@ -46,5 +49,45 @@ RailsAdmin.config do |config|
     ## With an audit adapter, you can add:
     # history_index
     # history_show
+  end
+
+  config.model 'User' do
+    edit do
+      exclude_fields :code, :remember_digest, :responses
+    end
+
+    create do
+      exclude_fields :code, :rememeber_digest, :responses
+    end
+  end
+
+  config.model 'Hardware' do
+    edit do
+      exclude_fields :response_details
+    end
+
+    create do
+      exclude_fields :response_details
+    end
+  end
+
+  config.model 'Question' do
+    edit do
+      exclude_fields :response_details
+    end
+
+    create do
+      exclude_fields :response_details
+    end
+  end
+
+  config.model 'Questionnaire' do
+    edit do
+      exclude_fields :responses, :status
+    end
+
+    create do
+      exclude_fields :responses, :status
+    end
   end
 end

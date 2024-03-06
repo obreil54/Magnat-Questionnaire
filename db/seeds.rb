@@ -61,27 +61,31 @@ Question.create!(
     name: "Сделай фото ноутбука с открытой крышкой",
     category_hard: laptop_category,
     question_type: photo_type,
-    required: true
+    required: true,
+    status: true
 )
 
 Question.create!(
   name: "Сделай фото asdasdasf с открытой крышкой",
   category_hard: laptop_category,
   question_type: photo_type,
-  required: true
+  required: false,
+  status: true
 )
 
 select_question = Question.create!(
     name: "Оцени качество работы ноутбука",
     category_hard: laptop_category,
     question_type: select_type,
-    required: true
+    required: true,
+    status: true
 )
 Question.create!(
     name: "Напиши детальный комментарий, если есть замечания к ноутбуку",
     category_hard: laptop_category,
     question_type: text_type,
-    required: true
+    required: true,
+    status: true
 )
 
 AnswerVariant.create!(

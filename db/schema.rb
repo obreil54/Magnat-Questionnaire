@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_03_05_112624) do
+ActiveRecord::Schema[7.1].define(version: 2024_03_06_121349) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -59,7 +59,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_05_112624) do
   create_table "hardwares", force: :cascade do |t|
     t.string "model"
     t.datetime "loaned_at"
-    t.boolean "status", default: false
+    t.boolean "status", default: false, null: false
     t.bigint "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -81,7 +81,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_05_112624) do
     t.datetime "updated_at", null: false
     t.date "start_date"
     t.date "end_date"
-    t.boolean "status", default: false
+    t.boolean "status", default: false, null: false
   end
 
   create_table "questions", force: :cascade do |t|
@@ -90,7 +90,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_05_112624) do
     t.datetime "updated_at", null: false
     t.bigint "category_hard_id"
     t.bigint "question_type_id"
-    t.boolean "required", default: true
+    t.boolean "required", default: true, null: false
+    t.boolean "status", default: true, null: false
     t.index ["category_hard_id"], name: "index_questions_on_category_hard_id"
     t.index ["question_type_id"], name: "index_questions_on_question_type_id"
   end
@@ -120,7 +121,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_05_112624) do
   create_table "users", force: :cascade do |t|
     t.string "email"
     t.string "code"
-    t.boolean "status"
+    t.boolean "status", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "admin", default: false, null: false

@@ -1,4 +1,6 @@
 class SessionsController < ApplicationController
+  before_action :redirect_if_logged_in, only: [:new]
+
   def new
   end
 
@@ -55,6 +57,13 @@ class SessionsController < ApplicationController
     if cookies.signed[:user_id] && session[:verification_email]
       user = User.find_by(id: cookies.signed[:user_id])
       user && user.email == session[:verification_email] && user.authenticated?(cookies[:remember_token])
+    end
+  end
+
+  def redirect_if_logged_in
+    if check_remember_me
+      log_in(User.find_by(id: cookies.signed[:user_id]))
+      redirect_to user_profile_path and return
     end
   end
 

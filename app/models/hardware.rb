@@ -3,7 +3,7 @@ class Hardware < ApplicationRecord
   belongs_to :category_hard
   has_many :response_details, dependent: :destroy
 
-  validates :model, :series, presence: true
+  validates :model, :series, :category_hard, presence: true
   validates :user, :loaned_at, presence: true, if: -> { status == true }
 
   before_save :clear_user_and_loan_date
