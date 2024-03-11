@@ -1,14 +1,12 @@
 class User < ApplicationRecord
   attr_accessor :remember_token
 
-  before_create :generate_code
+  before_create :generate_code, :status_change
   has_many :hardwares
   has_many :responses, dependent: :destroy
   before_destroy :update_hardwares_status
 
   validates :name, :email, presence: true
-  validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }
-  validates :name, format: { with: /\A[a-zA-Z'’\-\s]+\z/, message: "only allows letters, hyphens, apostrophes, and spaces" }
 
   def remember
     self.remember_token = User.new_token
@@ -30,7 +28,7 @@ class User < ApplicationRecord
   end
 
   def generate_code
-    self.code = SecureRandom.random_number(10000).to_s.rjust(4, '0')
+    self.log_in_code = SecureRandom.random_number(10000).to_s.rjust(4, '0')
   end
 
   def send_login_code
@@ -45,5 +43,13 @@ class User < ApplicationRecord
 
   def update_hardwares_status
     hardwares.update_all(status: false, loaned_at: nil, user_id: nil)
+  end
+
+  def status_change
+    if self.status = "1"
+      self.status = true
+    elsif self.status = "0"
+      self.status = false
+    end
   end
 end

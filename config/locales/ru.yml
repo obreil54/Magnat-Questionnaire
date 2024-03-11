@@ -112,6 +112,10 @@ ru:
         title: "История для %{model_label} '%{object_label}'"
         menu: "История"
         breadcrumb: "история"
+      import:
+        title: "Импорт %{model_label_plural}"
+        menu: "Импорт"
+        breadcrumb: "импорт"
     form:
       cancel: "Отмена"
       basic_info: "Основное"
@@ -147,3 +151,21 @@ ru:
         default_col_sep: ","
         col_sep: "Разделитель столбцов"
         col_sep_help: "Оставьте пустым, чтобы было по умолчанию ('%{value}')" # value is default_col_sep
+    import:
+      legend:
+        fields: "Поля"
+        upload: "Загрузка"
+        mapping: "Сопоставление"
+      model_fields: "Поля модели:"
+      association_fields: "Поля ассоциированных моделей:"
+      file: "Файл"
+      encoding: "Кодировка"
+      update_if_exists: "Обновить если существует"
+      update_lookup: "Поле для синхронизации"
+      help:
+        model_fields: ""
+        association_fields: ""
+        encoding: ""
+        update_if_exists: ""
+        file_limit: ""
+      mapping: "Сопоставление"
