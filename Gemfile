@@ -52,6 +52,7 @@ gem "sassc-rails"
 gem "cloudinary"
 gem "whenever", require: false
 gem "rails_admin", '~> 3.0'
+gem "rails_admin_import", "~> 3.0"
 gem "rails-i18n"
 gem "bcrypt"
 

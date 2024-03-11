@@ -30,9 +30,9 @@ class SessionsController < ApplicationController
 
   def verify_code
     email = session[:verification_email]
-    code = params[:verification][:code]
+    code = params[:verification][:log_in_code]
     remember_me = params[:verification][:remember_me] == "1"
-    @user = User.find_by(email: email, code: code)
+    @user = User.find_by(email: email, log_in_code: code)
     if @user
       log_in(@user)
       remember(@user) if remember_me

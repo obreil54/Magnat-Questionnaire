@@ -4,14 +4,12 @@ class Hardware < ApplicationRecord
   has_many :response_details, dependent: :destroy
 
   validates :model, :series, :category_hard, presence: true
-  validates :user, :loaned_at, presence: true, if: -> { status == true }
 
-  before_save :clear_user_and_loan_date
+  before_save :clear_user
 
   private
 
-  def clear_user_and_loan_date
+  def clear_user
     self.user_id = nil unless status
-    self.loaned_at = nil unless status
   end
 end

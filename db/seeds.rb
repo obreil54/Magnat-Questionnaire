@@ -41,7 +41,6 @@ laptop = Hardware.create!(
   category_hard: laptop_category,
   model: "MSI Stealth 15M",
   series: "A11UEK-009RU",
-  loaned_at: DateTime.now,
   status: true,
   user: user
 )

@@ -7,7 +7,7 @@ class UserMailer < ApplicationMailer
   #
   def login_code_email
     @user = params[:user]
-    @code = @user.code
+    @code = @user.log_in_code
     mail(to: @user.email, subject: "Your login code")
   end
 end
