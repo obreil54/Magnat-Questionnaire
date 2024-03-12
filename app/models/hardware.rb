@@ -3,13 +3,19 @@ class Hardware < ApplicationRecord
   belongs_to :category_hard
   has_many :response_details, dependent: :destroy
 
-  validates :model, :series, :category_hard, presence: true
+  validates :model, :series, :category_hard, :code, :user, presence: true
 
-  before_save :clear_user
+  class << self; attr_accessor :codes_imported; end
 
-  private
+  def self.before_import
+    self.codes_imported = []
+  end
 
-  def clear_user
-    self.user_id = nil unless status
+  def after_import_save(record)
+    self.class.codes_imported << record[:code] if record[:code].present?
+  end
+
+  def self.after_import
+    Hardware.where.not(code: self.codes_imported).update_all(status: false)
   end
 end

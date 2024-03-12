@@ -116,6 +116,7 @@ ru:
         title: "Импорт %{model_label_plural}"
         menu: "Импорт"
         breadcrumb: "импорт"
+        done: "импортировать"
     form:
       cancel: "Отмена"
       basic_info: "Основное"
@@ -169,3 +170,4 @@ ru:
         update_if_exists: ""
         file_limit: ""
       mapping: "Сопоставление"
+      import_error: "Ошибка импорта"

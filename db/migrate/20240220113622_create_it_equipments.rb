@@ -5,7 +5,7 @@ class CreateItEquipments < ActiveRecord::Migration[7.1]
       t.string :make
       t.string :model
       t.text :description
-      t.datetime :loaned_at
+      t.datetime :t
       t.boolean :status
       t.string :user_id
       t.string :integer
