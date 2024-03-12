@@ -8,8 +8,8 @@
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
 
-User.destroy_all
 Hardware.destroy_all
+User.destroy_all
 CategoryHard.destroy_all
 QuestionType.destroy_all
 Questionnaire.destroy_all
@@ -21,14 +21,16 @@ ResponseDetail.destroy_all
 user = User.create!(
   email: "obreil54@gmail.com",
   name: "Ilya Obretetskiy",
-  status: true
+  status: true,
+  code: 123455423452
 )
 
 User.create!(
   email: "admin@email.com",
   name: "Admin",
   status: true,
-  admin: true
+  admin: true,
+  code: 123455
 )
 
 laptop_category = CategoryHard.create!(name: "Ноутбук")
@@ -42,7 +44,8 @@ laptop = Hardware.create!(
   model: "MSI Stealth 15M",
   series: "A11UEK-009RU",
   status: true,
-  user: user
+  user: user,
+  code: 211234235
 )
 
 text_type = QuestionType.create!(name: "Произвольный Ответ")

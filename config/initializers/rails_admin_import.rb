@@ -6,6 +6,7 @@ RailsAdmin.config do |config|
 
   config.configure_with(:import) do |config|
     config.update_if_exists = true
+    config.rollback_on_error = true
   end
 
   config.model 'User' do

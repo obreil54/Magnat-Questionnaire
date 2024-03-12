@@ -4,9 +4,10 @@ class User < ApplicationRecord
   before_create :generate_code, :status_change
   has_many :hardwares
   has_many :responses, dependent: :destroy
-  before_destroy :update_hardwares_status
 
-  validates :name, :email, presence: true
+  validates :name, :email, :code, presence: true
+
+  class << self; attr_accessor :codes_imported; end
 
   def remember
     self.remember_token = User.new_token
@@ -15,6 +16,7 @@ class User < ApplicationRecord
 
   def authenticated?(remember_token)
     return false if remember_digest.nil?
+
     BCrypt::Password.new(remember_digest).is_password?(remember_token)
   end
 
@@ -39,17 +41,15 @@ class User < ApplicationRecord
     admin
   end
 
-  private
-
-  def update_hardwares_status
-    hardwares.update_all(status: false, loaned_at: nil, user_id: nil)
+  def self.before_import
+    self.codes_imported = []
   end
 
-  def status_change
-    if self.status = "1"
-      self.status = true
-    elsif self.status = "0"
-      self.status = false
-    end
+  def after_import_save(record)
+    self.class.codes_imported << record[:code] if record[:code].present?
+  end
+
+  def self.after_import
+    User.where.not(code: self.codes_imported).update_all(status: false)
   end
 end
