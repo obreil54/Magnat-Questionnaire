@@ -23,6 +23,7 @@ module MagnatQuestionnaire
     config.autoload_lib(ignore: %w(assets tasks))
 
     config.i18n.default_locale = :ru
+    config.i18n.fallbacks = [I18n.default_locale]
 
     # Configuration for the application, engines, and railties goes here.
     #

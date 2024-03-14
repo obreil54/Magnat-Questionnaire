@@ -2,6 +2,7 @@ class User < ApplicationRecord
   attr_accessor :remember_token
 
   before_create :generate_code, :status_change
+  before_validation :sanitize_email_address
   has_many :hardwares
   has_many :responses, dependent: :destroy
 
@@ -51,5 +52,9 @@ class User < ApplicationRecord
 
   def self.after_import
     User.where.not(code: self.codes_imported).update_all(status: false)
+  end
+
+  def sanitize_email_address
+    self.email = email.gsub(/^mailto:/, '') if email.present?
   end
 end
