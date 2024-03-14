@@ -170,4 +170,5 @@ ru:
         update_if_exists: ""
         file_limit: ""
       mapping: "Сопоставление"
-      import_error: "Ошибка импорта"
+      import_error:
+        create: "Ошибка создания %{name}: %{error}"

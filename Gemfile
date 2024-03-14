@@ -53,7 +53,8 @@ gem "cloudinary"
 gem "whenever", require: false
 gem "rails_admin", '~> 3.0'
 gem "rails_admin_import", "~> 3.0"
-gem "rails-i18n"
+gem "rails-i18n", "~> 7.0.0"
+gem 'russian', '~> 0.6.0'
 gem "bcrypt"
 
 
