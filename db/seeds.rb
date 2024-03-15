@@ -90,12 +90,20 @@ Question.create!(
     status: true
 )
 
-AnswerVariant.create!(
+variant1 = AnswerVariant.create!(
   name: "Удовлетворительно",
-  question: select_question
 )
 
-AnswerVariant.create!(
+variant2 = AnswerVariant.create!(
   name: "Hе удовлетворительно",
-  question: select_question
+)
+
+SelectedAnswerVariant.create!(
+  question: select_question,
+  answer_variant: variant1
+)
+
+SelectedAnswerVariant.create!(
+  question: select_question,
+  answer_variant: variant2
 )

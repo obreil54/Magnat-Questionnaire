@@ -73,11 +73,11 @@ RailsAdmin.config do |config|
 
   config.model 'Question' do
     edit do
-      exclude_fields :response_details
+      exclude_fields :response_details, :selected_answer_variants
     end
 
     create do
-      exclude_fields :response_details
+      exclude_fields :response_details, :selected_answer_variants
     end
   end
 
@@ -88,6 +88,16 @@ RailsAdmin.config do |config|
 
     create do
       exclude_fields :responses, :status
+    end
+  end
+
+  config.model 'AnswerVariant' do
+    edit do
+      exclude_fields :selected_answer_variants, :questions
+    end
+
+    create do
+      exclude_fields :selected_answer_variants, :questions
     end
   end
 end
