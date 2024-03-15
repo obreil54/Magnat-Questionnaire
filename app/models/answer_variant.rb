@@ -1,5 +1,6 @@
 class AnswerVariant < ApplicationRecord
-  belongs_to :question
+  has_many :selected_answer_variants, dependent: :destroy
+  has_many :questions, through: :selected_answer_variants
 
-  validates :name, :question, presence: true
+  validates :name, presence: true
 end

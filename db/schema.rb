@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_03_11_141655) do
+ActiveRecord::Schema[7.1].define(version: 2024_03_15_150358) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -44,10 +44,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_11_141655) do
 
   create_table "answer_variants", force: :cascade do |t|
     t.string "name"
-    t.bigint "question_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["question_id"], name: "index_answer_variants_on_question_id"
   end
 
   create_table "category_hards", force: :cascade do |t|
@@ -118,6 +116,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_11_141655) do
     t.index ["user_id"], name: "index_responses_on_user_id"
   end
 
+  create_table "selected_answer_variants", force: :cascade do |t|
+    t.bigint "answer_variant_id", null: false
+    t.bigint "question_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["answer_variant_id"], name: "index_selected_answer_variants_on_answer_variant_id"
+    t.index ["question_id"], name: "index_selected_answer_variants_on_question_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email"
     t.string "log_in_code"
@@ -132,7 +139,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_11_141655) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "answer_variants", "questions"
   add_foreign_key "hardwares", "category_hards"
   add_foreign_key "hardwares", "users"
   add_foreign_key "questions", "category_hards"
@@ -142,4 +148,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_11_141655) do
   add_foreign_key "response_details", "responses"
   add_foreign_key "responses", "questionnaires"
   add_foreign_key "responses", "users"
+  add_foreign_key "selected_answer_variants", "answer_variants"
+  add_foreign_key "selected_answer_variants", "questions"
 end
