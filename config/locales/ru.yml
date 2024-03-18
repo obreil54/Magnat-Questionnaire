@@ -1,6 +1,107 @@
 # Russian. Updated 2014-04-01
 
 ru:
+  activerecord:
+    models:
+      user: "Пользователь"
+      hardware: "Оборудование"
+      question: "Вопрос"
+      questionnaire: "Опрос"
+      answer_variant: "Вариант ответа"
+      category_hard: "Категория оборудования"
+      question_type: "Тип вопроса"
+      response: "Ответ"
+      response_detail: "Деталь ответа"
+      selected_answer_variant: "Выбранный вариант ответа"
+    attributes:
+      user:
+        code: "Код"
+        name: "ФИО"
+        email: "E-mail"
+        status: "Статус"
+        admin: "Администратор"
+        log_in_code: "Код для входа"
+        remember_digest: "Запомнить"
+        created_at: "Дата создания"
+        updated_at: "Дата изменения"
+        hardwares: "Оборудование"
+        responses: "Ответы"
+        id: "ID"
+      hardware:
+        code: "Код"
+        model: "Модель"
+        series: "Серийный номер"
+        status: "Статус"
+        category_hard: "Категория"
+        created_at: "Дата создания"
+        updated_at: "Дата изменения"
+        id: "ID"
+        response_details: "Детали ответов"
+      category_hard:
+        name: "Название"
+        created_at: "Дата создания"
+        updated_at: "Дата изменения"
+        id: "ID"
+        hardwares: "Оборудование"
+        questions: "Вопросы"
+      question_type:
+        name: "Название"
+        created_at: "Дата создания"
+        updated_at: "Дата изменения"
+        id: "ID"
+        questions: "Вопросы"
+      question:
+        name: "Вопрос"
+        question_type: "Тип вопроса"
+        category_hard: "Категория оборудования"
+        required: "Обязательный"
+        status: "Статус"
+        id: "ID"
+        created_at: "Дата создания"
+        updated_at: "Дата изменения"
+        selected_answer_variants: "Выбранные варианты ответа"
+        answer_variants: "Варианты ответа"
+        response_details: "Детали ответов"
+      answer_variant:
+        name: "Вариант ответа"
+        created_at: "Дата создания"
+        updated_at: "Дата изменения"
+        id: "ID"
+        questions: "Вопросы"
+        selected_answer_variants: "Выбранные варианты ответа"
+      selected_answer_variant:
+        answer_variant: "Вариант ответа"
+        question: "Вопрос"
+        created_at: "Дата создания"
+        updated_at: "Дата изменения"
+        id: "ID"
+      questionnaire:
+        name: "Название"
+        created_at: "Дата создания"
+        updated_at: "Дата изменения"
+        id: "ID"
+        response_details: "Детали ответов"
+        start_date: "Дата начала"
+        end_date: "Дата окончания"
+        status: "Статус"
+        responses: "Ответы"
+      response:
+        questionnaire: "Опрос"
+        user: "Пользователь"
+        created_at: "Дата начала"
+        updated_at: "Дата изменения"
+        end_date: "Дата окончания"
+        response_details: "Детали ответов"
+        id: "ID"
+      response_detail:
+        response: "Ответ"
+        question: "Вопрос"
+        hardware: "Оборудование"
+        answer: "Деталь ответа"
+        created_at: "Дата создания"
+        updated_at: "Дата изменения"
+        id: "ID"
+        image: "Фотография"
   admin:
     js:
       true: 'True'
@@ -172,3 +273,9 @@ ru:
       mapping: "Сопоставление"
       import_error:
         create: "Ошибка создания %{name}: %{error}"
+        general: "Ошибка импорта: %{error}"
+        line_item_limit: "Превышен лимит строк: %{limit}"
+        update: "Ошибка обновления %{name}: %{error}"
+      import_success:
+        create: "Успешно создан %{name}"
+        update: "Успешно обновлен %{name}"

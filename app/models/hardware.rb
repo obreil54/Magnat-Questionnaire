@@ -11,6 +11,14 @@ class Hardware < ApplicationRecord
     self.codes_imported = []
   end
 
+  def self.before_import_find(record)
+    if record[:code].present? && record[:model].present? && record[:series].present? && record[:category_hard].present? && record[:user].present?
+      return
+    else
+      raise ActiveRecord::RecordInvalid
+    end
+  end
+
   def after_import_save(record)
     self.class.codes_imported << record[:code] if record[:code].present?
   end
