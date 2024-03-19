@@ -14,6 +14,7 @@ Rails.application.routes.draw do
   get 'verify', to: 'sessions#verify'
   post 'verify', to: 'sessions#verify_code'
   get 'profile', to: 'users#show', as: 'user_profile'
+  get 'success', to: 'pages#success', as: 'success'
   delete 'logout', to: 'sessions#destroy', as: :logout
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

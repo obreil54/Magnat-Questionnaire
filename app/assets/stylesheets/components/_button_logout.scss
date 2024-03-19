@@ -1,16 +1,16 @@
-.button {
+.button-logout {
   display: inline-block;
-  background-color: white;
+  background-color: red;
   font-size: 16px;
   font-weight: 500;
   padding: 12px 25px;
-  color: $main;
   margin: 8px;
+  color: black;
   text-decoration: none;
-  border: 1px solid $main;
+  border: 1px solid red;
 
-  a, input, button {
-    color: $main;
+  a, input {
+    color: black;
     text-decoration: none;
   }
 }

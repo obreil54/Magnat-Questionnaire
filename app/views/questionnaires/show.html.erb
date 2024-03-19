@@ -7,7 +7,7 @@
         <% existing_response = @response_details.find_by(question_id: item.question_id) %>
         <div data-questionnaire-target="question" data-item-question-id="<%= item.question_id %>" data-item-hardware-id="<%= item.hardware_id %>" data-item-questionnaire-id="<%= @questionnaire.id %>" data-existing-image="<%= existing_response&.image&.url %>" class="<%= 'd-none' unless index.zero? %>">
           <h2><%= item.model %></h2>
-          <h2><%= index + 1 %>. <%= item.question %></h2>
+          <h2 class="question"><%= index + 1 %>. <%= item.question %></h2>
           <% case item.question_type %>
           <% when 'Произвольный Ответ' %>
             <%= f.input "response_details_attributes[#{item.question_id}][answer]", as: :text, label: false, required: item.required, input_html: { value: existing_response&.answer } %>
@@ -16,7 +16,7 @@
             <%= f.input "response_details_attributes[#{item.question_id}][answer]", as: :select, label: false, required: item.required, collection: Question.find(item.question_id).answer_variants, value_method: :name, selected: existing_response&.answer %>
             <div class="error-message" data-questionnaire-target="error" style="display: none; color: red"></div>
           <% when 'Фото' %>
-            <%= f.input :image, as: :file, required: item.required, label: false, input_html: { accept: 'image/*', capture: 'camera', id:"photo_capture_#{index}", class: "d-none", data: { questionnaire_target: "source", action: "change->questionnaire#show", question_type: "photo" } } %>
+            <%= f.input :image, as: :file, required: item.required, label: false, input_html: { name: "response_details_attributes[#{item.question_id}][image]", accept: 'image/*', capture: 'camera', id:"photo_capture_#{index}", class: "d-none", data: { questionnaire_target: "source", action: "change->questionnaire#show", question_type: "photo" } } %>
             <div class="error-message" data-questionnaire-target="error" style="display: none; color: red"></div>
             <div data-questionnaire-target="preview" id="preview_<%= index %>" class="image-preview"></div>
             <label for="photo_capture_<%= index %>">
@@ -26,9 +26,11 @@
         </div>
       <% end %>
       <br><br>
-      <button type="button"  class="d-none button-secondary" data-action="click->questionnaire#previous" data-questionnaire-target="back">Назад</button>
-      <button type="button" class="button-secondary" data-action="click->questionnaire#next" data-questionnaire-target="next">Следующий</button><br>
-      <%= f.button :submit, "Submit", class: "d-none button", data: { questionnaire_target: "submit" } %>
+      <div id="questionnaire-buttons">
+        <button type="button"  class="d-none button-secondary" data-action="click->questionnaire#previous" data-questionnaire-target="back">Назад</button>
+        <button type="button" class="button-secondary" data-action="click->questionnaire#next" data-questionnaire-target="next">Далее</button>
+        <%= f.button :submit, "Завершить", class: "d-none button-success", data: { questionnaire_target: "submit" } %>
+      </div>
     </div>
   <% end %>
 </div>

@@ -2,7 +2,7 @@
   <h2>Войти</h2>
   <div class="form">
     <%= simple_form_for :session, url: login_path, method: :post do |f| %>
-      <%= f.input :email, required: true, input_html: {autocomplete: "email" } %>
+      <%= f.input :email, required: true, input_html: {autocomplete: "Kорпоративный email" }, label: "Kорпоративный email" %>
       <h2 class="button"><%= f.button :submit, "Запросить код" %></h2>
     <% end %>
   </div>

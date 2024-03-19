@@ -1,14 +1,16 @@
-.button-red {
+.button-success {
   display: inline-block;
-  background-color: red;
-  font-size: 12px;
+  background-color: green;
+  font-size: 16px;
   font-weight: 500;
   padding: 12px 25px;
-  margin: 8px, 0;
   color: white;
+  margin: 8px;
   text-decoration: none;
+  border: 1px solid green;
+  border-radius: 0;
 
-  a, input {
+  a, input, button {
     color: white;
     text-decoration: none;
   }
