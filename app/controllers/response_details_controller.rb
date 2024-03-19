@@ -10,7 +10,7 @@ class ResponseDetailsController < ApplicationController
     response = Response.find_by(questionnaire_id: questionnaire_id, user_id: current_user.id)
     response_detail = response.response_details.find_or_initialize_by(question_id: question_id, hardware_id: hardware_id)
 
-    image_file = params.dig(:response_detail, :image)
+    image_file = params.dig("response_details_attributes", question_id.to_s, "image")
     if image_file.present?
       response_detail.image.attach(image_file)
       response_detail.answer = response_detail.image.url

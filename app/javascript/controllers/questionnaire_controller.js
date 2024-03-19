@@ -59,9 +59,6 @@ export default class extends Controller {
     }
 
     const errorMessageDiv = this.errorTargets[currentIndex];
-    console.log(isValid)
-    console.log(isRequired)
-    console.log(errorMessageDiv)
     if (!isValid && isRequired) {
       errorMessageDiv.style.display = "block";
       errorMessageDiv.textContent = "Пожалуйста, дайте ответ на текущий вопрос.";
@@ -86,7 +83,6 @@ export default class extends Controller {
   }
 
   updateImagePreview(questionElement) {
-    console.log("Updating question image preview.")
     const existingImageUrl = questionElement.dataset.existingImage;
     const previewTarget = questionElement.querySelector("[data-questionnaire-target='preview");
     if (existingImageUrl) {
@@ -121,7 +117,7 @@ export default class extends Controller {
     }
     const isFinal = true;
     this.sendResponse(isFinal).then(() => {
-      window.location.href = "/profile";
+      window.location.href = "/success";
     }).catch(() => {
       alert("Произошла ошибка. Пожалуйста, попробуйте еще раз.");
     });
@@ -131,20 +127,28 @@ export default class extends Controller {
     const currentIndex = this.currentQuestionIndex();
     const formData = new FormData(this.element);
     const currentQuestion = this.questionTargets[currentIndex];
-    const input = currentQuestion.querySelector("input, select, textarea");
-    const inputType = input.getAttribute("type");
+    const inputs = currentQuestion.querySelectorAll("input, select, textarea");
 
-    formData.append("answer", input.value);
+    inputs.forEach(input => {
+      const name = input.name
+      const value = input.value
+      if (input.type === "file") {
+        const file = input.files[0];
+        if (file) {
+          formData.append("answer", file);
+        } else if (currentQuestion.dataset.existingImage) {
+            formData.append("keep_existing_image", true);
+        }
+      } else {
+        formData.append("answer", value);
+      }
+    })
+
     formData.append("question_id", currentQuestion.dataset.itemQuestionId);
     formData.append("hardware_id", currentQuestion.dataset.itemHardwareId);
     formData.append("questionnaire_id", currentQuestion.dataset.itemQuestionnaireId);
     if (isFinal) {
       formData.append("is_final", true);
-    }
-
-
-    if (inputType === "file" && !input.files.length && currentQuestion.dataset.existingImage) {
-      formData.append("keep_existing_image", "true");
     }
 
     return fetch(this.responseDetailsPathValue, {

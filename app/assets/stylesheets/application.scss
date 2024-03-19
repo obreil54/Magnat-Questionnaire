@@ -10,8 +10,9 @@
 // Your CSS partials
 @import "components/index";
 @import "components/button";
-@import "components/button_red";
+@import "components/button_logout";
 @import "components/button_secondary";
+@import "components/button_success";
 @import "components/form";
 @import "components/card";
 @import "components/notice";
@@ -33,7 +34,7 @@ body {
 
 .fa-camera {
   color: white;
-  background-color: #e5a60e;
+  background-color: $main;
   padding: 16px;
   font-size: 3rem;
   border-radius: 50%;
@@ -41,7 +42,7 @@ body {
 }
 
 h1 {
-  margin-bottom: 16px;
+  margin-bottom: 32px;
 }
 
 h2 {
@@ -53,7 +54,13 @@ li {
   font-weight: 500;
 }
 
-th, td {
-  padding: 16px;
-  margin: 16px;
+.question {
+  border: 1px solid $main;
+  padding: 8px;
+}
+
+#questionnaire-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
