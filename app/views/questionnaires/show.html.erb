@@ -26,6 +26,11 @@
         </div>
       <% end %>
       <br><br>
+      <div id="loading-animation" class="loading-spinner d-none" data-questionnaire-target="loading">
+        <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+      </div>
       <div id="questionnaire-buttons">
         <button type="button"  class="d-none button-secondary" data-action="click->questionnaire#previous" data-questionnaire-target="back">Назад</button>
         <button type="button" class="button-secondary" data-action="click->questionnaire#next" data-questionnaire-target="next">Далее</button>

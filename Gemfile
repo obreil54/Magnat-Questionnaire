@@ -57,7 +57,6 @@ gem "rails-i18n", "~> 7.0.0"
 gem 'russian', '~> 0.6.0'
 gem "bcrypt"
 
-
 group :development, :test do
   gem "dotenv-rails"
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
