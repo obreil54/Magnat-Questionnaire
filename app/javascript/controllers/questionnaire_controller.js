@@ -2,23 +2,33 @@ import { Controller } from "@hotwired/stimulus"
 
 // Connects to data-controller="questionnaire"
 export default class extends Controller {
-  static targets = ["question", "submit", "next", "back", "source", "preview", "error"]
+  static targets = ["question", "submit", "next", "back", "source", "preview", "error", "loading"]
   static values = { responseDetailsPath: String }
 
   initialize() {
     this.showCurrentQuestion(0);
   }
 
+  displayLoadingAnimation(show) {
+    if (show) {
+      this.loadingTarget.classList.remove("d-none");
+    } else {
+      this.loadingTarget.classList.add("d-none");
+    }
+  }
+
   next() {
     if (!this.validateResponse()) {
       return;
     }
+    this.displayLoadingAnimation(true);
     const currentIndex = this.currentQuestionIndex();
     this.sendResponse().then(response => {
       if (response.ok) {
         if (currentIndex < this.questionTargets.length - 1) {
           this.showCurrentQuestion(currentIndex + 1);
         }
+        this.displayLoadingAnimation(false);
         this.updateButtonVisibility();
       } else {
         alert("Произошла ошибка. Пожалуйста, попробуйте еще раз.");
@@ -115,8 +125,11 @@ export default class extends Controller {
     if (!this.validateResponse()) {
       return;
     }
+    this.displayLoadingAnimation(true);
+
     const isFinal = true;
     this.sendResponse(isFinal).then(() => {
+      this.displayLoadingAnimation(false);
       window.location.href = "/success";
     }).catch(() => {
       alert("Произошла ошибка. Пожалуйста, попробуйте еще раз.");
