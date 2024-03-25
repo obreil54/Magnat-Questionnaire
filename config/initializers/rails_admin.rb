@@ -1,28 +1,9 @@
+require Rails.root.join('lib',  'questionnaire_staff_status_report.rb')
+
 RailsAdmin.config do |config|
+
   config.asset_source = :sprockets
 
-  ### Popular gems integration
-
-  ## == Devise ==
-  # config.authenticate_with do
-  #   warden.authenticate! scope: :user
-  # end
-  # config.current_user_method(&:current_user)
-
-  ## == CancanCan ==
-  # config.authorize_with :cancancan
-
-  ## == Pundit ==
-  # config.authorize_with :pundit
-
-  ## == PaperTrail ==
-  # config.audit_with :paper_trail, 'User', 'PaperTrail::Version' # PaperTrail >= 3.0.0
-
-  ### More at https://github.com/railsadminteam/rails_admin/wiki/Base-configuration
-
-  ## == Gravatar integration ==
-  ## To disable Gravatar integration in Navigation Bar set to false
-  # config.show_gravatar = false
   def current_user
     @current_user ||= User.find(session[:user_id]) if session[:user_id]
   end
@@ -32,8 +13,6 @@ RailsAdmin.config do |config|
       redirect_to main_app.root_path, alert: "У вас нет доступа администратора"
     end
   end
-
-  config.asset_source = :sprockets
 
   config.actions do
     dashboard                     # mandatory
@@ -46,9 +25,10 @@ RailsAdmin.config do |config|
     delete
     show_in_app
 
-    ## With an audit adapter, you can add:
-    # history_index
-    # history_show
+    questionnaire_staff_status_report
+
+    all
+    import
   end
 
   config.model 'User' do
@@ -98,6 +78,29 @@ RailsAdmin.config do |config|
 
     create do
       exclude_fields :selected_answer_variants, :questions
+    end
+  end
+
+  config.configure_with(:import) do |config|
+    config.update_if_exists = true
+    config.rollback_on_error = true
+  end
+
+  config.model 'User' do
+    import do
+      include_all_fields
+      exclude_fields :id, :created_at, :updated_at, :log_in_code, :remember_digest, :admin, :hardwares, :responses
+      mapping_key :code
+      mapping_key_list [:code]
+    end
+  end
+
+  config.model 'Hardware' do
+    import do
+      include_all_fields
+      exclude_fields :id, :created_at, :updated_at, :response_details
+      mapping_key :code
+      mapping_key_list [:code]
     end
   end
 end

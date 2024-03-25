@@ -24,7 +24,7 @@ class ResponseDetailsController < ApplicationController
 
 
     if params[:is_final] == "true"
-      response.end_date = Date.today
+      response.end_date = DateTime.now
       response.save
     end
 

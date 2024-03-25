@@ -1,5 +1,3 @@
-# Russian. Updated 2014-04-01
-
 ru:
   activerecord:
     models:
@@ -218,6 +216,10 @@ ru:
         menu: "Импорт"
         breadcrumb: "импорт"
         done: "импортировать"
+      questionnaire_staff_status_report:
+        title: "Статус по сотрудникам"
+        menu: "Статус по сотрудникам"
+        breadcrumb: "Статус по сотрудникам"
     form:
       cancel: "Отмена"
       basic_info: "Основное"
