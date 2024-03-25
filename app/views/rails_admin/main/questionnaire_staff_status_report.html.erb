@@ -1,0 +1,51 @@
+<%= form_tag rails_admin.url_for(action: :questionnaire_staff_status_report), method: :get do %>
+  <div>
+    <%= label_tag :questionnaire_id, 'Опрос*' %>
+    <%= select_tag :questionnaire_id, options_from_collection_for_select(Questionnaire.all, :id, :name, params[:questionnaire_id]), include_blank: true %>
+  </div>
+  <div>
+    <%= label_tag :completed, 'Статус' %>
+    <%= select_tag :completed, options_for_select([['Показать все', ''], ['Завершенные', 'yes'], ['Не завершенные', 'no']], params[:completed]), include_blank: false %>
+  </div>
+  <div>
+    <%= submit_tag 'Показать Отчет' %>
+  </div>
+<% end %>
+
+<% if params[:questionnaire_id].present? && @questionnaire %>
+  <table class="table table-condensed table-striped table-hover">
+    <thead>
+      <tr>
+        <th>Опрос</th>
+        <th>Код сотрудника</th>
+        <th>Сотрудник</th>
+        <th>Дата начала</th>
+        <th>Дата окончания</th>
+        <th>Длительность (минут)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @items.each do |item| %>
+        <% if item.respond_to?(:questionnaire) %>
+          <tr>
+            <td><%= item.questionnaire.name %></td>
+            <td><%= item.user.code %></td>
+            <td><%= item.user.name %></td>
+            <td><%= item.created_at.strftime('%d/%m/%y') %></td>
+            <td><%= item.end_date ? item.end_date.strftime('%d/%m/%y') : 'Не завершен' %></td>
+            <td><%= item.end_date ? "#{((item.end_date - item.created_at)/60).round} Минуты" : "" %></td>
+          </tr>
+        <% else %>
+          <tr>
+            <td><%= @questionnaire.name %></td>
+            <td><%= item.code %></td>
+            <td><%= item.name %></td>
+            <td>Не начат</td>
+            <td>Не завершен</td>
+            <td></td>
+          </tr>
+        <% end %>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
