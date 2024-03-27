@@ -1,4 +1,5 @@
 require Rails.root.join('lib',  'questionnaire_staff_status_report.rb')
+require Rails.root.join('lib',  'answers_report.rb')
 
 RailsAdmin.config do |config|
 
@@ -26,6 +27,7 @@ RailsAdmin.config do |config|
     show_in_app
 
     questionnaire_staff_status_report
+    answers_report
 
     all
     import
@@ -33,11 +35,11 @@ RailsAdmin.config do |config|
 
   config.model 'User' do
     edit do
-      exclude_fields :code, :remember_digest, :responses
+      exclude_fields :log_in_code, :remember_digest, :responses, :hardwares
     end
 
     create do
-      exclude_fields :code, :rememeber_digest, :responses
+      exclude_fields :log_in_code, :rememeber_digest, :responses, :hardwares
     end
   end
 

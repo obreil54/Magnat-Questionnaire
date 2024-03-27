@@ -1,0 +1,27 @@
+wb = xlsx_package.workbook
+wb.add_worksheet(name: "Статус по сотрудникам") do |sheet|
+
+  sheet.add_row ["Опрос", "Код сотрудника", "Сотрудник", "Дата начала", "Дата окончания", "Длительность (минут)"]
+
+  @items.each do |item|
+    if item.respond_to?(:questionnaire)
+      sheet.add_row [
+        @questionnaire.name,
+        item.user.code,
+        item.user.name,
+        item.created_at.strftime('%d/%m/%y'),
+        item.end_date ? item.end_date.strftime('%d/%m/%y') : 'Не завершен',
+        item.end_date ? "#{((item.end_date - item.created_at)/60).round} Минуты" : ""
+      ], types: [:string, :string, :string, :string, :string, :string]
+    else
+      sheet.add_row [
+        @questionnaire.name,
+        item.code,
+        item.name,
+        "Не начат",
+        "Не завершен",
+        ""
+      ], types: [:string, :string, :string, :string, :string, :string]
+    end
+  end
+end
