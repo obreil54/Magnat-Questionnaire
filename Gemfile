@@ -56,6 +56,8 @@ gem "rails_admin_import", "~> 3.0"
 gem "rails-i18n", "~> 7.0.0"
 gem 'russian', '~> 0.6.0'
 gem "bcrypt"
+gem 'axlsx'
+gem 'axlsx_rails'
 
 group :development, :test do
   gem "dotenv-rails"

@@ -220,6 +220,10 @@ ru:
         title: "Статус по сотрудникам"
         menu: "Статус по сотрудникам"
         breadcrumb: "Статус по сотрудникам"
+      answers_report:
+        title: "Отчет по ответам"
+        menu: "Отчет по ответам"
+        breadcrumb: "Отчет по ответам"
     form:
       cancel: "Отмена"
       basic_info: "Основное"

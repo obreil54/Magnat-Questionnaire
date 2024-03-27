@@ -1,0 +1,19 @@
+wb = xlsx_package.workbook
+wb.add_worksheet(name: "Отчет по ответам") do |sheet|
+
+  sheet.add_row ["Опрос", "Код сотрудника", "Сотрудник", "Оборудование", "Вопрос", "Ответ", "Дата ответа"]
+
+  @responses.each do |response|
+    response.response_details.each do |detail|
+      sheet.add_row [
+        response.questionnaire.name,
+        response.user.code,
+        response.user.name,
+        detail.hardware&.model,
+        detail.question.name,
+        detail.answer,
+        detail.updated_at.strftime('%d/%m/%y')
+      ], types: [:string, :string, :string, :string, :string, :string, :string]
+    end
+  end
+end

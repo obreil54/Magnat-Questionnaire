@@ -46,7 +46,16 @@ module RailsAdmin
               @items = []
             end
 
-            render action: @action.template_name
+            respond_to do |format|
+              format.html do
+                render action: @action.template_name
+              end
+              format.xlsx do
+                filename = "Отчет по сотрудникам_#{Date.today}.xlsx"
+                response.headers['Content-Disposition'] = "attachment; filename=#{filename}"
+                render axlsx: "#{Rails.root}/app/views/rails_admin/main/questionnaire_staff_status_report.xlsx.axlsx", filename: filename, disposition: 'attachment'
+              end
+            end
           end
         end
 

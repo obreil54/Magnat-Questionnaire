@@ -1,0 +1,59 @@
+<%= form_tag rails_admin.url_for(action: :answers_report), method: :get do %>
+  <div>
+    <%= label_tag :questionnaire_id, 'Опрос*' %>
+    <%= select_tag :questionnaire_id, options_from_collection_for_select(Questionnaire.all, :id, :name, params[:questionnaire_id]), include_blank: true, required: true %>
+  </div>
+  <div>
+    <%= label_tag :category_hard_id, 'Тип оборудования' %>
+    <%= select_tag :category_hard_id, options_from_collection_for_select(CategoryHard.all, :id, :name, params[:category_hard_id]), include_blank: true %>
+  </div>
+  <div>
+    <%= label_tag :user_id, 'Сотрудник' %>
+    <%= select_tag :user_id, options_from_collection_for_select(User.where(status: true, admin: false), :id, :name, params[:user_id]), include_blank: true %>
+  </div>
+  <div>
+    <%= submit_tag 'Показать Отчет' %>
+  </div>
+  <%= link_to 'Экспорт в Excel', rails_admin.index_path(model_name: 'answers_report', action_name: 'answers_report', questionnaire_id: params[:questionnaire_id], category_hard_id: params[:category_hard_id], user_id: params[:user_id], format: :xlsx) %>
+<% end %>
+
+
+
+<% if params[:questionnaire_id].present? && @responses.present? %>
+  <table class="table table-condensed table-striped table-hover">
+    <thead>
+      <tr>
+        <th>Опрос</th>
+        <th>Код сотрудника</th>
+        <th>Сотрудник</th>
+        <th>Оборудование</th>
+        <th>Вопрос</th>
+        <th>Ответ</th>
+        <th>Дата ответа</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @responses.each do |response| %>
+        <% response.response_details.each do |answer| %>
+          <tr>
+            <td><%= link_to response.questionnaire.name, rails_admin.show_path(model_name: 'questionnaire', id: response.questionnaire.id) %></td>
+            <td><%= response.user.code %></td>
+            <td><%= link_to response.user.name, rails_admin.show_path(model_name: 'user', id: response.user.id) %></td>
+            <td><%= link_to answer.hardware&.model, rails_admin.show_path(model_name: 'hardware', id: answer.hardware.id) %></td>
+            <td><%= answer.question.name %></td>
+            <td>
+              <% if answer.question.question_type.name == "Фото" %>
+                <%= link_to "Фото", answer.image.url, target: "_blank" %>
+              <% else %>
+                <%= answer.answer %>
+              <% end %>
+            </td>
+            <td><%= answer.updated_at.strftime('%d/%m/%y') %></td>
+          </tr>
+        <% end %>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p>Выберите опрос</p>
+<% end %>
