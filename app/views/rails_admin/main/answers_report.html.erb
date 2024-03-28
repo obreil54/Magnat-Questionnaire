@@ -1,26 +1,26 @@
-<%= form_tag rails_admin.url_for(action: :answers_report), method: :get do %>
-  <div>
-    <%= label_tag :questionnaire_id, 'Опрос*' %>
-    <%= select_tag :questionnaire_id, options_from_collection_for_select(Questionnaire.all, :id, :name, params[:questionnaire_id]), include_blank: true, required: true %>
+<%= form_tag rails_admin.url_for(action: :answers_report), class: "card bg-light p-3", method: :get do %>
+  <div class="d-flex align-items-center">
+    <%= label_tag :questionnaire_id, 'Опрос*', class: "btn btn-info btn-sm" %>
+    <%= select_tag :questionnaire_id, options_from_collection_for_select(Questionnaire.all, :id, :name, params[:questionnaire_id]), include_blank: true, required: true, class: "form-control-sm ms-1" %>
   </div>
-  <div>
-    <%= label_tag :category_hard_id, 'Тип оборудования' %>
-    <%= select_tag :category_hard_id, options_from_collection_for_select(CategoryHard.all, :id, :name, params[:category_hard_id]), include_blank: true %>
+  <div class="mt-2 d-flex align-items-center">
+    <%= label_tag :category_hard_id, 'Тип оборудования', class: "btn btn-info btn-sm" %>
+    <%= select_tag :category_hard_id, options_from_collection_for_select(CategoryHard.all, :id, :name, params[:category_hard_id]), include_blank: true, class: "form-control-sm ms-1" %>
   </div>
-  <div>
-    <%= label_tag :user_id, 'Сотрудник' %>
-    <%= select_tag :user_id, options_from_collection_for_select(User.where(status: true, admin: false), :id, :name, params[:user_id]), include_blank: true %>
+  <div class="mt-2 d-flex align-items-center">
+    <%= label_tag :user_id, 'Сотрудник', class: "btn btn-info btn-sm" %>
+    <%= select_tag :user_id, options_from_collection_for_select(User.where(status: true, admin: false), :id, :name, params[:user_id]), include_blank: true, class: "form-control-sm ms-1" %>
   </div>
-  <div>
-    <%= submit_tag 'Показать Отчет' %>
+  <div class="mt-4 d-flex justify-content-between">
+    <%= submit_tag 'Создать Отчет', class: "btn btn-primary" %>
+    <%= link_to 'Экспорт в Excel', rails_admin.index_path(model_name: 'answers_report', action_name: 'answers_report', questionnaire_id: params[:questionnaire_id], category_hard_id: params[:category_hard_id], user_id: params[:user_id], format: :xlsx), class: "btn btn-info" %>
   </div>
-  <%= link_to 'Экспорт в Excel', rails_admin.index_path(model_name: 'answers_report', action_name: 'answers_report', questionnaire_id: params[:questionnaire_id], category_hard_id: params[:category_hard_id], user_id: params[:user_id], format: :xlsx) %>
 <% end %>
 
 
 
 <% if params[:questionnaire_id].present? && @responses.present? %>
-  <table class="table table-condensed table-striped table-hover">
+  <table class="table table-condensed table-striped table-hover mt-5">
     <thead>
       <tr>
         <th>Опрос</th>
