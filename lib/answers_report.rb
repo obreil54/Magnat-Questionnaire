@@ -24,10 +24,12 @@ module RailsAdmin
                                    .where(questionnaire_id: params[:questionnaire_id])
                                    .joins(:user)
                                    .where(users: { status: true, admin: false })
+                                   .distinct
 
               if params[:category_hard_id].present?
                 @responses = @responses.joins(response_details: { question: :category_hard })
                                        .where(category_hards: { id: params[:category_hard_id] })
+                                       .distinct
               end
 
               @responses = @responses.where('responses.user_id = ?', params[:user_id]) if params[:user_id].present?
