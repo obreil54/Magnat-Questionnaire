@@ -43,7 +43,7 @@
             <td><%= answer.question.name %></td>
             <td>
               <% if answer.question.question_type.name == "Фото" %>
-                <%= link_to "Фото", answer.image.url, target: "_blank" %>
+                <%= link_to image_tag(answer.image.url, class:"img-thumbnail", size: "100x100"), answer.image.url, target: "_blank"  %>
               <% else %>
                 <%= answer.answer %>
               <% end %>
