@@ -58,6 +58,7 @@ gem 'russian', '~> 0.6.0'
 gem "bcrypt"
 gem 'axlsx'
 gem 'axlsx_rails'
+gem 'image_processing', '~> 1.2'
 
 group :development, :test do
   gem "dotenv-rails"
