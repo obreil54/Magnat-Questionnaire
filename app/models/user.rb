@@ -5,8 +5,11 @@ class User < ApplicationRecord
   before_validation :sanitize_email_address
   has_many :hardwares
   has_many :responses, dependent: :destroy
+  has_secure_password validations: false
 
   validates :name, :email, :code, presence: true
+  validates :password, presence: true, length: { minimum: 6 }, if: -> { admin? }
+  validates :code, uniqueness: true
 
   class << self; attr_accessor :codes_imported; end
 

@@ -13,6 +13,8 @@ Rails.application.routes.draw do
   post 'login', to: 'sessions#create'
   get 'verify', to: 'sessions#verify'
   post 'verify', to: 'sessions#verify_code'
+  get 'admin_password', to: 'sessions#new_admin_password', as: 'admin_password'
+  post 'admin_password', to: 'sessions#verify_admin_password', as: 'verify_admin_password'
   get 'profile', to: 'users#show', as: 'user_profile'
   get 'success', to: 'pages#success', as: 'success'
   delete 'logout', to: 'sessions#destroy', as: :logout

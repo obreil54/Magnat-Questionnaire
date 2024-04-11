@@ -30,7 +30,8 @@ User.create!(
   name: "Admin",
   status: true,
   admin: true,
-  code: 123455
+  code: 123455423457,
+  password: "password"
 )
 
 laptop_category = CategoryHard.create!(name: "Ноутбук")
