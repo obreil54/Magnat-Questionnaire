@@ -24,3 +24,5 @@ test:
     - docker-compose -f docker-compose.test.yml run --rm app rm -rf tmp/
     - docker-compose -f docker-compose.test.yml down
     - docker volume rm `docker volume ls -qf dangling=true`
+tags:
+    - docker
