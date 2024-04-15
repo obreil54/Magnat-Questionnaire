@@ -18,11 +18,11 @@ stages:
 test:
   stage: test
   script:
-    - docker-compose -f docker-compose.test.yml build --pull
-    - docker-compose -f docker-compose.test.yml run --rm app sh -c "./docker/wait_for_services.sh && bundle exec rake db:create spec"
+    - docker compose -f docker-compose.test.yml build --pull
+    - docker compose -f docker-compose.test.yml run --rm app sh -c "./docker/wait_for_services.sh && bundle exec rake db:create spec"
   after_script:
-    - docker-compose -f docker-compose.test.yml run --rm app rm -rf tmp/
-    - docker-compose -f docker-compose.test.yml down
+    - docker compose -f docker-compose.test.yml run --rm app rm -rf tmp/
+    - docker compose -f docker-compose.test.yml down
     - docker volume rm `docker volume ls -qf dangling=true`
   tags:
     - docker
