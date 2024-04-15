@@ -25,13 +25,13 @@ before_script:
 
 build:
   stage: build
-   script:
-     - docker pull $CI_REGISTRY_IMAGE:production || true
-     - docker build --cache-from $CI_REGISTRY_IMAGE:production
+  script:
+    - docker pull $CI_REGISTRY_IMAGE:production || true
+    - docker build --cache-from $CI_REGISTRY_IMAGE:production
                     --tag $CI_REGISTRY_IMAGE:production
                     --build-arg revision=$CI_COMMIT_SHA
                     -f ./Dockerfile .
-     - docker push $CI_REGISTRY_IMAGE:production
+    - docker push $CI_REGISTRY_IMAGE:production
 
 
 #test:
