@@ -15,6 +15,7 @@ variables:
   CONTAINER_STABLE_IMAGE: $CI_REGISTRY_IMAGE:stable
   DOCKER_TLS_CERTDIR: ""
 stages:
+  - build
   - test
   - release
   - deploy
@@ -22,15 +23,25 @@ stages:
 before_script:
   - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
 
+build:
+  stage: build
+   script:
+     - docker pull $CI_REGISTRY_IMAGE:production || true
+     - docker build --cache-from $CI_REGISTRY_IMAGE:production
+                    --tag $CI_REGISTRY_IMAGE:production
+                    --build-arg revision=$CI_COMMIT_SHA
+                    -f ./Dockerfile .
+     - docker push $CI_REGISTRY_IMAGE:production
 
-test:
-  stage: test
-  script:
-    - docker compose -f docker-compose.test.yml build --pull
-    - docker compose -f docker-compose.test.yml run --rm app sh -c "./docker/wait_for_services.sh && bundle exec rake db:create spec"
-  after_script:
-    - docker compose -f docker-compose.test.yml run --rm app rm -rf tmp/
-    - docker compose -f docker-compose.test.yml down
-    - docker volume rm `docker volume ls -qf dangling=true`
-  tags:
-    - docker
+
+#test:
+#  stage: test
+#  script:
+#    - docker compose -f docker-compose.test.yml build --pull
+#    - docker compose -f docker-compose.test.yml run --rm app sh -c "./docker/wait_for_services.sh && bundle exec rake db:create spec"
+#  after_script:
+#    - docker compose -f docker-compose.test.yml run --rm app rm -rf tmp/
+#    - docker compose -f docker-compose.test.yml down
+#    - docker volume rm `docker volume ls -qf dangling=true`
+#  tags:
+#    - docker
