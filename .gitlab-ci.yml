@@ -5,6 +5,8 @@ services:
 cache:
   paths:
     - node_modules
+    - vendor
+    - public
 
 variables:
   DOCKER_HOST: tcp://docker:2375/
