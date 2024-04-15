@@ -32,7 +32,8 @@ build:
                     --build-arg revision=$CI_COMMIT_SHA
                     -f ./Dockerfile .
     - docker push $CI_REGISTRY_IMAGE:production
-
+  tags:
+    - docker
 
 #test:
 #  stage: test
