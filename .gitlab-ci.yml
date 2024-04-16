@@ -3,6 +3,7 @@ services:
   - docker:dind
 
 cache:
+  key: $CI_PROJECT_NAME
   paths:
     - node_modules
     - vendor
