@@ -5,9 +5,9 @@ services:
 cache:
   key: $CI_PROJECT_NAME
   paths:
-    - node_modules
     - vendor
     - public
+    - rails
 
 variables:
   DOCKER_HOST: tcp://docker:2375/
