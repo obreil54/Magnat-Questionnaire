@@ -28,21 +28,22 @@ build:
   stage: build
   script:
     - docker pull $CI_REGISTRY_IMAGE:base_production || true
-    - docker build --target base --cache-from $CI_REGISTRY_IMAGE:base_production
+    - docker build --target base
                     --tag $CI_REGISTRY_IMAGE:base_production
                     --build-arg revision=$CI_COMMIT_SHA
                     -f ./Dockerfile .
 
     - docker pull $CI_REGISTRY_IMAGE:build_production || true
-    - docker build --target build --cache-from $CI_REGISTRY_IMAGE:base_production --cache-from $CI_REGISTRY_IMAGE:build_production
+    - docker build --target build
                     --tag $CI_REGISTRY_IMAGE:build_production
                     --build-arg revision=$CI_COMMIT_SHA
                     -f ./Dockerfile .
 
     - docker pull $CI_REGISTRY_IMAGE:production || true
-    - docker build --cache-from $CI_REGISTRY_IMAGE:base_production
-                   --cache-from $CI_REGISTRY_IMAGE:build_production
-                   --cache-from $CI_REGISTRY_IMAGE:production
+    - docker build
+#                   --cache-from $CI_REGISTRY_IMAGE:base_production
+#                   --cache-from $CI_REGISTRY_IMAGE:build_production
+#                   --cache-from $CI_REGISTRY_IMAGE:production
                     --tag $CI_REGISTRY_IMAGE:production
                     --build-arg revision=$CI_COMMIT_SHA
                     -f ./Dockerfile .
