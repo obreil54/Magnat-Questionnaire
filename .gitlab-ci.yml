@@ -2,12 +2,12 @@ image: docker
 services:
   - docker:dind
 
-cache:
-  key: $CI_PROJECT_NAME
-  paths:
-    - vendor
-    - public
-    - rails
+#cache:
+#  key: $CI_PROJECT_NAME
+#  paths:
+#    - vendor
+#    - public
+#    - rails
 
 variables:
   DOCKER_HOST: tcp://docker:2375/
