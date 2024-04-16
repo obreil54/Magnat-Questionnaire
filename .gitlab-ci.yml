@@ -28,7 +28,7 @@ build:
   stage: build
   script:
     - docker pull $CI_REGISTRY_IMAGE:base_production || true
-    - docker build --target base
+    - docker build --target base --cache-from $CI_REGISTRY_IMAGE:base_production
                     --tag $CI_REGISTRY_IMAGE:base_production
                     --build-arg revision=$CI_COMMIT_SHA
                     -f ./Dockerfile .
