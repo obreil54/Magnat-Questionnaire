@@ -119,7 +119,7 @@ ru:
       ends_with: 'Заканчивается на'
     loading: "Загрузка..."
     home:
-      name: "Главная"
+      name: "Выйти"
     pagination:
       previous: "&laquo; Предыдущая"
       next: "Следующая &raquo;"

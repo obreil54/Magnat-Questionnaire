@@ -1,0 +1,68 @@
+image: docker
+services:
+  - docker:dind
+
+#cache:
+#  key: $CI_PROJECT_NAME
+#  paths:
+#    - vendor
+#    - public
+#    - rails
+
+variables:
+  DOCKER_HOST: tcp://docker:2375/
+  DOCKER_DRIVER: overlay2
+  # CONTAINER_LATEST_IMAGE: $CI_REGISTRY_IMAGE:latest
+  CONTAINER_STABLE_IMAGE: $CI_REGISTRY_IMAGE:stable
+  DOCKER_TLS_CERTDIR: ""
+stages:
+  - build
+  - test
+  - release
+  - deploy
+
+before_script:
+  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+
+build:
+  stage: build
+  script:
+    - docker pull $CI_REGISTRY_IMAGE:base_production || true
+    - docker build --target base --cache-from $CI_REGISTRY_IMAGE:base_production
+                    --tag $CI_REGISTRY_IMAGE:base_production
+                    --build-arg revision=$CI_COMMIT_SHA
+                    --build-arg BUILDKIT_INLINE_CACHE=1
+                    -f ./Dockerfile .
+
+    - docker pull $CI_REGISTRY_IMAGE:build_production || true
+    - docker build --target build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY_IMAGE:base_production --cache-from $CI_REGISTRY_IMAGE:build_production
+                    --tag $CI_REGISTRY_IMAGE:build_production
+                    --build-arg revision=$CI_COMMIT_SHA
+                    -f ./Dockerfile .
+
+    - docker pull $CI_REGISTRY_IMAGE:production || true
+    - docker build
+                   --cache-from $CI_REGISTRY_IMAGE:base_production
+                   --cache-from $CI_REGISTRY_IMAGE:build_production
+                   --cache-from $CI_REGISTRY_IMAGE:production
+                    --tag $CI_REGISTRY_IMAGE:production
+                    --build-arg revision=$CI_COMMIT_SHA
+                    -f ./Dockerfile .
+    - docker push $CI_REGISTRY_IMAGE:base_production
+    - docker push $CI_REGISTRY_IMAGE:build_production
+    - docker push $CI_REGISTRY_IMAGE:production
+
+  tags:
+    - docker
+
+#test:
+#  stage: test
+#  script:
+#    - docker compose -f docker-compose.test.yml build --pull
+#    - docker compose -f docker-compose.test.yml run --rm app sh -c "./docker/wait_for_services.sh && bundle exec rake db:create spec"
+#  after_script:
+#    - docker compose -f docker-compose.test.yml run --rm app rm -rf tmp/
+#    - docker compose -f docker-compose.test.yml down
+#    - docker volume rm `docker volume ls -qf dangling=true`
+#  tags:
+#    - docker
