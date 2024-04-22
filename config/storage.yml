@@ -6,6 +6,11 @@ local:
   service: Disk
   root: <%= Rails.root.join("storage") %>
 
+custom_service:
+  service: CustomFile
+  token: <%= ENV["FILE_API_TOKEN"] %>
+  base_url: "https://it-audit.magnat.ru"
+
 #cloudinary:
 #  service: Cloudinary
 
