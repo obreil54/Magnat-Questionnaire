@@ -3,10 +3,10 @@ require 'rails_admin/config/actions/base'
 require 'rails_admin/config/actions/answers_report'
 require 'rails_admin/config/actions/questionnaire_staff_status_report'
 
-
 RailsAdmin.config do |config|
 
   config.asset_source = :sprockets
+
 
   def current_user
     @current_user ||= User.find(session[:user_id]) if session[:user_id]
@@ -40,13 +40,20 @@ RailsAdmin.config do |config|
     edit do
       exclude_fields :log_in_code, :remember_digest, :responses, :hardwares, :password_digest
       field :password do
+        css_class do
+          bindings[:object].admin? ? nil : 'd-none'
+        end
         help 'Пароль должен содержать не менее 6 символов'
       end
     end
 
     create do
       exclude_fields :log_in_code, :rememeber_digest, :responses, :hardwares, :password_digest
+      field :admin do
+        label 'Администратор'
+      end
       field :password do
+        css_class 'd-none'
         help 'Пароль должен содержать не менее 6 символов'
       end
     end
