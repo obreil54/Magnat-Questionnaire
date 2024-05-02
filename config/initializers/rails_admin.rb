@@ -38,11 +38,17 @@ RailsAdmin.config do |config|
 
   config.model 'User' do
     edit do
-      exclude_fields :log_in_code, :remember_digest, :responses, :hardwares
+      exclude_fields :log_in_code, :remember_digest, :responses, :hardwares, :password_digest
+      field :password do
+        help 'Пароль должен содержать не менее 6 символов'
+      end
     end
 
     create do
-      exclude_fields :log_in_code, :rememeber_digest, :responses, :hardwares
+      exclude_fields :log_in_code, :rememeber_digest, :responses, :hardwares, :password_digest
+      field :password do
+        help 'Пароль должен содержать не менее 6 символов'
+      end
     end
   end
 
