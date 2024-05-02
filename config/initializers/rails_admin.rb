@@ -1,5 +1,8 @@
-require Rails.root.join('lib',  'questionnaire_staff_status_report.rb')
-require Rails.root.join('lib',  'answers_report.rb')
+require 'rails_admin/config/actions'
+require 'rails_admin/config/actions/base'
+require 'rails_admin/config/actions/answers_report'
+require 'rails_admin/config/actions/questionnaire_staff_status_report'
+
 
 RailsAdmin.config do |config|
 
