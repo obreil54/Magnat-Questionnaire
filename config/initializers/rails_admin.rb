@@ -49,9 +49,6 @@ RailsAdmin.config do |config|
 
     create do
       exclude_fields :log_in_code, :rememeber_digest, :responses, :hardwares, :password_digest
-      field :admin do
-        label 'Администратор'
-      end
       field :password do
         css_class 'd-none'
         help 'Пароль должен содержать не менее 6 символов'
