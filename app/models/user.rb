@@ -1,13 +1,13 @@
 class User < ApplicationRecord
   attr_accessor :remember_token
 
-  before_create :generate_code, :status_change
+  before_create :status_change
   before_validation :sanitize_email_address
   has_many :hardwares
   has_many :responses, dependent: :destroy
   has_secure_password validations: false
 
-  validates :name, :email, :code, presence: true
+  validates :name, :email, presence: true
   validates :password, presence: true, length: { minimum: 6 }, if: -> { admin? }
   validates :code, uniqueness: true
 
@@ -54,7 +54,7 @@ class User < ApplicationRecord
   end
 
   def self.after_import
-    User.where.not(code: self.codes_imported).update_all(status: false)
+    User.where.not(code: self.codes_imported).where(admin: false).update_all(status: false)
   end
 
   def sanitize_email_address
