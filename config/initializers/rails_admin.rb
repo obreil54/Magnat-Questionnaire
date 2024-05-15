@@ -104,9 +104,29 @@ RailsAdmin.config do |config|
   config.model 'User' do
     import do
       include_all_fields
-      exclude_fields :id, :created_at, :updated_at, :log_in_code, :remember_digest, :admin, :hardwares, :responses
+      exclude_fields :id, :created_at, :updated_at, :log_in_code, :remember_digest, :admin, :hardwares, :responses, :password_digest
       mapping_key :code
       mapping_key_list [:code]
+      field :email do
+        label do
+          'email'
+        end
+      end
+      field :status do
+        label do
+          'status'
+        end
+      end
+      field :name do
+        label do
+          'name'
+        end
+      end
+      field :code do
+        label do
+          'code'
+        end
+      end
     end
   end
 
@@ -116,6 +136,36 @@ RailsAdmin.config do |config|
       exclude_fields :id, :created_at, :updated_at, :response_details
       mapping_key :code
       mapping_key_list [:code]
+      field :model do
+        label do
+          'model'
+        end
+      end
+      field :status do
+        label do
+          'status'
+        end
+      end
+      field :series do
+        label do
+          'series'
+        end
+      end
+      field :code do
+        label do
+          'status'
+        end
+      end
+      field :user do
+        label do
+          'user'
+        end
+      end
+      field :category_hard do
+        label do
+          'category_hard'
+        end
+      end
     end
   end
 end
