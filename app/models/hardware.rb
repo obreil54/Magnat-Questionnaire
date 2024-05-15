@@ -24,6 +24,6 @@ class Hardware < ApplicationRecord
   end
 
   def self.after_import
-    Hardware.where.not(code: self.codes_imported).update_all(status: false)
+    Hardware.where.not(code: self.codes_imported).update_all(status: false, updated_at: Time.current)
   end
 end

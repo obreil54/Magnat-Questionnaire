@@ -54,7 +54,7 @@ class User < ApplicationRecord
   end
 
   def self.after_import
-    User.where.not(code: self.codes_imported).where(admin: false).update_all(status: false)
+    User.where.not(code: self.codes_imported).where(admin: false).update_all(status: false, updated_at: Time.current)
   end
 
   def sanitize_email_address
