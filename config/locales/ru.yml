@@ -143,7 +143,7 @@ ru:
       ago: "назад"
       reset_filters: "Сбросить фильтры"
     flash:
-      successful: "Удалось успешно %{action} %{name}"
+      successful: "Удалось успешно %{action}"
       error: "Не удалось %{action} %{name}"
       noaction: "Никаких изменений не выполнено"
       model_not_found: "Модель '%{model}' не найдена"
