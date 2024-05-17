@@ -8,7 +8,7 @@ class User < ApplicationRecord
   has_secure_password validations: false
 
   validates :name, :email, presence: true
-  validates :password, presence: true, length: { minimum: 6 }, if: -> { admin? }
+  validates :password, presence: true, length: { minimum: 6 }, if: -> { should_validate_password? }
   validates :code, uniqueness: true
 
   class << self; attr_accessor :codes_imported; end
@@ -59,5 +59,15 @@ class User < ApplicationRecord
 
   def sanitize_email_address
     self.email = email.gsub(/^mailto:/, '') if email.present?
+  end
+
+  private
+
+  def should_validate_password?
+    admin? && (password.present? || password_digest.blank?)
+  end
+
+  def update_password_if_present
+    self.password = password.presence
   end
 end

@@ -43,7 +43,13 @@ RailsAdmin.config do |config|
         css_class do
           bindings[:object].admin? ? nil : 'd-none'
         end
-        help 'Пароль должен содержать не менее 6 символов'
+        help 'Пароль должен содержать не менее 6 символов. Если не хотите изменять пароль, оставьте это поле пустым.'
+        html_attributes do
+          {
+            type: 'password',
+            placeholder: ('•' * 6)
+        }
+        end
       end
     end
 
@@ -52,6 +58,10 @@ RailsAdmin.config do |config|
       field :password do
         css_class 'd-none'
         help 'Пароль должен содержать не менее 6 символов'
+        required true
+        html_attributes do
+          { type: 'password' }
+        end
       end
     end
   end
@@ -153,7 +163,7 @@ RailsAdmin.config do |config|
       end
       field :code do
         label do
-          'status'
+          'code'
         end
       end
       field :user do
