@@ -99,8 +99,12 @@ class SessionsController < ApplicationController
       session[:remember_me] = params[:session][:remember_me]
       user.generate_code
       user.save
-      user.send_login_code
-      redirect_to verify_path, notice: "Код был отправлен на #{user.email}."
+      if Setting.email_system_name.present?
+        user.send_login_code
+        redirect_to verify_path, notice: "Код был отправлен на #{user.email}."
+      else
+        redirect_to login_path, alert: "Внимание, системный емайл системы не настроен, обратитесь к администратору!"
+      end
     end
   end
 end

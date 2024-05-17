@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_04_11_104738) do
+ActiveRecord::Schema[7.1].define(version: 2024_05_17_140741) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -123,6 +123,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_11_104738) do
     t.datetime "updated_at", null: false
     t.index ["answer_variant_id"], name: "index_selected_answer_variants_on_answer_variant_id"
     t.index ["question_id"], name: "index_selected_answer_variants_on_question_id"
+  end
+
+  create_table "settings", force: :cascade do |t|
+    t.string "settingname", null: false
+    t.string "settingvalue"
+    t.string "comment"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["settingname"], name: "index_settings_on_settingname", unique: true
   end
 
   create_table "users", force: :cascade do |t|
