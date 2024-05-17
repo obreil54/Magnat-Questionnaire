@@ -24,6 +24,7 @@ ru:
         updated_at: "Дата изменения"
         hardwares: "Оборудование"
         responses: "Ответы"
+        password: "Пароль"
         id: "ID"
       hardware:
         code: "Код"
