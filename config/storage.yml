@@ -8,8 +8,8 @@ local:
 
 custom_service:
   service: CustomFile
-  token: <%= ENV["FILE_API_TOKEN"] %>
-  base_url: "https://it-audit.magnat.ru"
+  token: "PLACEHOLDER_TOKEN"
+  base_url: "PLACEHOLDER_URL"
 
 #cloudinary:
 #  service: Cloudinary
