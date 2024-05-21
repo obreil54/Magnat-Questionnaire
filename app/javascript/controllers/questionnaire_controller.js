@@ -31,8 +31,20 @@ export default class extends Controller {
         this.displayLoadingAnimation(false);
         this.updateButtonVisibility();
       } else {
-        alert("Произошла ошибка. Пожалуйста, попробуйте еще раз.");
+        response.json().then(data => {
+          console.error("Server error response:", data.error);
+          alert(data.error || "Произошла ошибка. Пожалуйста, попробуйте еще раз.");
+          this.displayLoadingAnimation(false);
+        }).catch(() => {
+          console.error('Error parsing JSON response:', error);
+          alert("Произошла ошибка. Пожалуйста, попробуйте еще раз.");
+          this.displayLoadingAnimation(false);
+        });
       }
+    }).catch(() => {
+      console.error('Fetch error:', error);
+      alert("Произошла ошибка. Пожалуйста, попробуйте еще раз.");
+      this.displayLoadingAnimation(false);
     });
   }
 
@@ -128,11 +140,25 @@ export default class extends Controller {
     this.displayLoadingAnimation(true);
 
     const isFinal = true;
-    this.sendResponse(isFinal).then(() => {
-      this.displayLoadingAnimation(false);
-      window.location.href = "/success";
+    this.sendResponse(isFinal).then(response => {
+      if (response.ok) {
+        this.displayLoadingAnimation(false);
+        window.location.href = "/success";
+      } else {
+      response.json().then(data => {
+          console.error('Server error response:', data);
+          alert(data.error || "Произошла ошибка. Пожалуйста, попробуйте еще раз.");
+          this.displayLoadingAnimation(false);
+        }).catch(() => {
+          console.error('Error parsing JSON response:', error);
+          alert("Произошла ошибка. Пожалуйста, попробуйте еще раз.");
+          this.displayLoadingAnimation(false);
+        });
+      }
     }).catch(() => {
-      alert("Произошла ошибка. Пожалуйста, попробуйте еще раз.");
+      console.error('Fetch error:', error);
+      alert(data.error || "Произошла ошибка. Пожалуйста, попробуйте еще раз.");
+      this.displayLoadingAnimation(false);
     });
   }
 
