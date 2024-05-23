@@ -1,9 +1,12 @@
-require Rails.root.join('lib',  'questionnaire_staff_status_report.rb')
-require Rails.root.join('lib',  'answers_report.rb')
+require 'rails_admin/config/actions'
+require 'rails_admin/config/actions/base'
+require 'rails_admin/config/actions/answers_report'
+require 'rails_admin/config/actions/questionnaire_staff_status_report'
 
 RailsAdmin.config do |config|
 
   config.asset_source = :sprockets
+
 
   def current_user
     @current_user ||= User.find(session[:user_id]) if session[:user_id]
@@ -35,11 +38,31 @@ RailsAdmin.config do |config|
 
   config.model 'User' do
     edit do
-      exclude_fields :log_in_code, :remember_digest, :responses, :hardwares
+      exclude_fields :log_in_code, :remember_digest, :responses, :hardwares, :password_digest
+      field :password do
+        css_class do
+          bindings[:object].admin? ? nil : 'd-none'
+        end
+        help 'Пароль должен содержать не менее 6 символов. Если не хотите изменять пароль, оставьте это поле пустым.'
+        html_attributes do
+          {
+            type: 'password',
+            placeholder: ('•' * 6)
+        }
+        end
+      end
     end
 
     create do
-      exclude_fields :log_in_code, :rememeber_digest, :responses, :hardwares
+      exclude_fields :log_in_code, :rememeber_digest, :responses, :hardwares, :password_digest
+      field :password do
+        css_class 'd-none'
+        help 'Пароль должен содержать не менее 6 символов'
+        required true
+        html_attributes do
+          { type: 'password' }
+        end
+      end
     end
   end
 
@@ -91,9 +114,29 @@ RailsAdmin.config do |config|
   config.model 'User' do
     import do
       include_all_fields
-      exclude_fields :id, :created_at, :updated_at, :log_in_code, :remember_digest, :admin, :hardwares, :responses
+      exclude_fields :id, :created_at, :updated_at, :log_in_code, :remember_digest, :admin, :hardwares, :responses, :password_digest
       mapping_key :code
       mapping_key_list [:code]
+      field :email do
+        label do
+          'email'
+        end
+      end
+      field :status do
+        label do
+          'status'
+        end
+      end
+      field :name do
+        label do
+          'name'
+        end
+      end
+      field :code do
+        label do
+          'code'
+        end
+      end
     end
   end
 
@@ -103,6 +146,36 @@ RailsAdmin.config do |config|
       exclude_fields :id, :created_at, :updated_at, :response_details
       mapping_key :code
       mapping_key_list [:code]
+      field :model do
+        label do
+          'model'
+        end
+      end
+      field :status do
+        label do
+          'status'
+        end
+      end
+      field :series do
+        label do
+          'series'
+        end
+      end
+      field :code do
+        label do
+          'code'
+        end
+      end
+      field :user do
+        label do
+          'user'
+        end
+      end
+      field :category_hard do
+        label do
+          'category_hard'
+        end
+      end
     end
   end
 end

@@ -1,14 +1,14 @@
 class User < ApplicationRecord
   attr_accessor :remember_token
 
-  before_create :generate_code, :status_change
+  before_create :status_change
   before_validation :sanitize_email_address
   has_many :hardwares
   has_many :responses, dependent: :destroy
   has_secure_password validations: false
 
-  validates :name, :email, :code, presence: true
-  validates :password, presence: true, length: { minimum: 6 }, if: -> { admin? }
+  validates :name, :email, presence: true
+  validates :password, presence: true, length: { minimum: 6 }, if: -> { should_validate_password? }
   validates :code, uniqueness: true
 
   class << self; attr_accessor :codes_imported; end
@@ -54,10 +54,20 @@ class User < ApplicationRecord
   end
 
   def self.after_import
-    User.where.not(code: self.codes_imported).update_all(status: false)
+    User.where.not(code: self.codes_imported).where(admin: false).update_all(status: false, updated_at: Time.current)
   end
 
   def sanitize_email_address
     self.email = email.gsub(/^mailto:/, '') if email.present?
+  end
+
+  private
+
+  def should_validate_password?
+    admin? && (password.present? || password_digest.blank?)
+  end
+
+  def update_password_if_present
+    self.password = password.presence
   end
 end

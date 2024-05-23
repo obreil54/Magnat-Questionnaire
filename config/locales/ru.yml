@@ -24,6 +24,7 @@ ru:
         updated_at: "Дата изменения"
         hardwares: "Оборудование"
         responses: "Ответы"
+        password: "Пароль"
         id: "ID"
       hardware:
         code: "Код"
@@ -119,7 +120,7 @@ ru:
       ends_with: 'Заканчивается на'
     loading: "Загрузка..."
     home:
-      name: "Главная"
+      name: "Выйти"
     pagination:
       previous: "&laquo; Предыдущая"
       next: "Следующая &raquo;"
@@ -143,7 +144,7 @@ ru:
       ago: "назад"
       reset_filters: "Сбросить фильтры"
     flash:
-      successful: "Удалось успешно %{action} %{name}"
+      successful: "Удалось успешно %{action}"
       error: "Не удалось %{action} %{name}"
       noaction: "Никаких изменений не выполнено"
       model_not_found: "Модель '%{model}' не найдена"

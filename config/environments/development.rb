@@ -34,7 +34,7 @@ Rails.application.configure do
   end
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :cloudinary
+  config.active_storage.service = :custom_service
 
   config.action_mailer.delivery_method = :letter_opener
   config.action_mailer.perform_deliveries = true

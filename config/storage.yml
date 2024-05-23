@@ -6,6 +6,11 @@ local:
   service: Disk
   root: <%= Rails.root.join("storage") %>
 
+custom_service:
+  service: CustomFile
+  token: "PLACEHOLDER_TOKEN"
+  base_url: "PLACEHOLDER_URL"
+
 #cloudinary:
 #  service: Cloudinary
 
