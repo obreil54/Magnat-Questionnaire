@@ -16,9 +16,19 @@ class ResponseDetailsController < ApplicationController
     if image_file.present?
       relative_path = PhotoPathGenerator.generate_path(current_user, response_detail.hardware, response.created_at)
       file_name = PhotoPathGenerator.generate_filename(response_detail.hardware.series, response.created_at)
-      full_relative_path = "#{relative_path}#{file_name}"
+      full_relative_path = File.join(relative_path, file_name)
 
-      response_detail.image.attach(io: image_file, filename: file_name)
+      Rails.logger.debug "Generated Path: #{relative_path}"
+      Rails.logger.debug "Generated Filename: #{file_name}"
+      Rails.logger.debug "Full Relative Path: #{full_relative_path}"
+
+      blob = ActiveStorage::Blob.create_and_upload!(
+        io: image_file,
+        filename: file_name,
+        metadata: { custom_path: relative_path }
+      )
+
+      response_detail.image.attach(blob)
       response_detail.answer = full_relative_path
     elsif keep_existing_image && response_detail.image.attached?
       response_detail.answer = response_detail.image.url unless response_detail.answer.present?
