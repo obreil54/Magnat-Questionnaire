@@ -8,11 +8,17 @@ class ActiveStorage::Service::CustomFileService < ActiveStorage::Service
   end
 
   def upload(relative_path, io, checksum: nil, **)
-    full_path = "#{Setting.fileapi_path}/#{relative_path}"
+    blob = ActiveStorage::Blob.find_by(key: relative_path)
+    custom_path = blob.metadata["custom_path"]
+    full_path = "#{Setting.fileapi_path}#{custom_path}#{blob.filename.to_s}"
+
     uri = URI("#{@base_url}/files")
     request = Net::HTTP::Post.new(uri)
     request["X-Request-Token"] = @token
     request.set_form({'file' => io, 'filePath' => full_path}, 'multipart/form-data')
+
+    Rails.logger.debug "Uploading to Path: #{full_path}"
+
     response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https', read_timeout: 500, open_timeout: 500) do |http|
       http.request(request)
     end
@@ -22,7 +28,10 @@ class ActiveStorage::Service::CustomFileService < ActiveStorage::Service
   end
 
   def download(relative_path)
-    full_path = "#{Setting.fileapi_path}/#{relative_path}"
+    blob = ActiveStorage::Blob.find_by(key: relative_path)
+    custom_path = blob.metadata["custom_path"]
+    full_path = "#{Setting.fileapi_path}#{custom_path}#{blob.filename.to_s}"
+
     uri = URI("#{@base_url}/files")
     uri.query = URI.encode_www_form(filePath: full_path)
     request = Net::HTTP::Get.new(uri)
@@ -45,7 +54,10 @@ class ActiveStorage::Service::CustomFileService < ActiveStorage::Service
   end
 
   def delete(relative_path)
-    full_path = "#{Setting.fileapi_path}/#{relative_path}"
+    blob = ActiveStorage::Blob.find_by(key: relative_path)
+    custom_path = blob.metadata["custom_path"]
+    full_path = "#{Setting.fileapi_path}#{custom_path}#{blob.filename.to_s}"
+
     uri = URI("#{@base_url}/files")
     uri.query = URI.encode_www_form(filePath: full_path)
     request = Net::HTTP::Delete.new(uri)
@@ -57,7 +69,10 @@ class ActiveStorage::Service::CustomFileService < ActiveStorage::Service
   end
 
   def exist?(relative_path)
-    full_path = "#{Setting.fileapi_path}/#{relative_path}"
+    blob = ActiveStorage::Blob.find_by(key: relative_path)
+    custom_path = blob.metadata["custom_path"]
+    full_path = "#{Setting.fileapi_path}#{custom_path}#{blob.filename.to_s}"
+
     uri = URI("#{@base_url}/files")
     uri.query = URI.encode_www_form(filePath: full_path)
     request = Net::HTTP::Head.new(uri)
@@ -69,7 +84,10 @@ class ActiveStorage::Service::CustomFileService < ActiveStorage::Service
   end
 
   def url(relative_path, expires_in: nil, filename: nil, content_type: nil, disposition: nil, **options)
-    "#{@base_url}/files?filePath=#{Setting.fileapi_path}/#{relative_path}&X-Request-Token=#{@token}"
+    blob = ActiveStorage::Blob.find_by(key: relative_path)
+    custom_path = blob.metadata["custom_path"]
+    full_path = "#{Setting.fileapi_path}#{custom_path}#{blob.filename.to_s}"
+    "#{@base_url}/files?filePath=#{full_path}"
   end
 
   def open(relative_path, checksum: nil, **options)
@@ -83,6 +101,7 @@ class ActiveStorage::Service::CustomFileService < ActiveStorage::Service
 
   def delete_prefixed(prefix)
     full_path = "#{Setting.fileapi_path}/#{prefix}"
+
     uri = URI("#{@base_url}/files")
     uri.query = URI.encode_www_form(filePath: full_path)
     request = Net::HTTP::Delete.new(uri)
