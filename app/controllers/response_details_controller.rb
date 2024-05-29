@@ -12,8 +12,11 @@ class ResponseDetailsController < ApplicationController
     response_detail = response.response_details.find_or_initialize_by(question_id: question_id, hardware_id: hardware_id)
 
     image_file = params.dig("response_details_attributes", question_id.to_s, "image")
+    if image_file.blank? && answer.is_a?(ActionDispatch::Http::UploadedFile)
+      image_file = answer
+    end
 
-    if image_file.present?
+    if image_file.present? && image_file.is_a?(ActionDispatch::Http::UploadedFile)
       relative_path = PhotoPathGenerator.generate_path(current_user, response_detail.hardware, response.created_at)
       file_name = PhotoPathGenerator.generate_filename(response_detail.hardware.series, response.created_at)
       full_relative_path = File.join(relative_path, file_name)
