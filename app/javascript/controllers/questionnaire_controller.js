@@ -6,7 +6,9 @@ export default class extends Controller {
   static values = { responseDetailsPath: String }
 
   initialize() {
+    console.log("Questionnaire controller initialized test for 29/05/2024")
     this.showCurrentQuestion(0);
+    this.lastSelectedImages = {};
   }
 
   displayLoadingAnimation(show) {
@@ -77,7 +79,7 @@ export default class extends Controller {
     } else {
       const fileSelected = input.files.length > 0;
       const existingImage = currentQuestion.dataset.existingImage && currentQuestion.dataset.existingImage.trim() !== "";
-      isValid = fileSelected || existingImage;
+      isValid = fileSelected || existingImage || this.lastSelectedImages[currentQuestion.dataset.itemQuestionId];
     }
 
     const errorMessageDiv = this.errorTargets[currentIndex];
@@ -121,14 +123,16 @@ export default class extends Controller {
   show(event) {
     const index = this.sourceTargets.indexOf(event.target);
     const previewTarget = this.previewTargets[index];
-
     const file = event.target.files[0];
+    const currentQuestion = this.questionTargets[index];
+
     if (file && file.type.match('image')) {
       const reader = new FileReader();
       reader.onload = function(e) {
         previewTarget.innerHTML = `<img src="${e.target.result}">`
       };
       reader.readAsDataURL(file);
+      this.lastSelectedImages[currentQuestion.dataset.itemQuestionId] = file;
     }
   }
 
@@ -174,9 +178,13 @@ export default class extends Controller {
       if (input.type === "file") {
         const file = input.files[0];
         if (file) {
+          console.log("Submitting regular file", file)
           formData.append("answer", file);
+        } else if (this.lastSelectedImages[currentQuestion.dataset.itemQuestionId]) {
+          console.log("Submitting last selected image", this.lastSelectedImages[currentQuestion.dataset.itemQuestionId])
+          formData.append("answer", this.lastSelectedImages[currentQuestion.dataset.itemQuestionId]);
         } else if (currentQuestion.dataset.existingImage) {
-            formData.append("keep_existing_image", true);
+          formData.append("keep_existing_image", true);
         }
       } else {
         formData.append("answer", value);
