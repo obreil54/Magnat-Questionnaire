@@ -26,6 +26,7 @@ class ResponseDetailsController < ApplicationController
       Rails.logger.debug "Full Relative Path: #{full_relative_path}"
 
       blob = ActiveStorage::Blob.create_and_upload!(
+        key: full_relative_path,
         io: image_file,
         filename: file_name,
         metadata: { custom_path: relative_path }
