@@ -55,6 +55,11 @@ class ActiveStorage::Service::CustomFileService < ActiveStorage::Service
 
   def delete(relative_path)
     blob = ActiveStorage::Blob.find_by(key: relative_path)
+
+    if blob.nil?
+      Rails.logger.error "Blob not found for key: #{relative_path}"
+    end
+
     custom_path = blob.metadata["custom_path"]
     full_path = "#{Setting.fileapi_path}#{custom_path}#{blob.filename.to_s}"
 
@@ -65,7 +70,13 @@ class ActiveStorage::Service::CustomFileService < ActiveStorage::Service
     response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https') do |http|
       http.request(request)
     end
-    raise "Delete failed" unless response.is_a?(Net::HTTPSuccess)
+
+    unless response.is_a?(Net::HTTPSuccess)
+      Rails.logger.error "Delete failed: HTTP Status #{response.code}, Response Body: #{response.body}"
+      raise "Delete failed"
+    else
+      Rails.logger.info "Deleted file: #{full_path}"
+    end
   end
 
   def exist?(relative_path)
