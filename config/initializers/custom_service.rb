@@ -19,4 +19,10 @@ Rails.application.config.to_prepare do
     :custom_service,
     Rails.application.config.active_storage.service_configurations
   )
+
+  ActiveStorage::Blob.class_eval do
+    def purge_later
+      CustomPurgeJob.perform_later(self)
+    end
+  end
 end
