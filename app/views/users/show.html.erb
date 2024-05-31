@@ -1,12 +1,15 @@
 <div class="card">
   <h1>Здраствуйте, <%= @user.name %></h1>
   <% if @hardware.present? %>
-    <h2>Ваша Техника:</h2>
-    <% @hardware.each do |hardware| %>
-      <ul>
-        <li><%= "#{hardware.category_hard.name} - #{hardware.model}" %></li>
-      </ul>
-    <% end %>
+    <ul>
+      <% @hardware.each do |hardware| %>
+        <li class ="hardware">
+          <a href="javascript:void(0);" onclick="openModal('hardwareModal-<%= hardware.id %>')">
+            <%= "#{hardware.category_hard.name} - #{hardware.model}" %>
+          </a>
+        </li>
+      <% end %>
+    </ul>
   <% end %>
   <% if @questionnaire.present? && @hardware.present? %>
     <% user_responses = @questionnaire.responses.where(user_id: @user.id) %>
@@ -25,3 +28,9 @@
   <% end %>
   <h2 class="button-logout"><%= link_to "Выйти", logout_path, data: {turbo_method: :delete}  %></h2>
 </div>
+
+
+
+<% @hardware.each do |hardware| %>
+  <%= render 'shared/hardware_modal', modal_id: "hardwareModal-#{hardware.id}", title: "#{hardware.category_hard.name} - #{hardware.model}", content: "S/N - #{hardware.series}" %>
+<% end %>

@@ -5,6 +5,8 @@ require 'rails_admin/config/actions/questionnaire_staff_status_report'
 
 RailsAdmin.config do |config|
 
+  config.main_app_name = ["it-audit Админ", "Версия: #{ENV['MAGNAT_VERSION']}"]
+
   config.asset_source = :sprockets
 
 
@@ -38,7 +40,7 @@ RailsAdmin.config do |config|
 
   config.model 'User' do
     edit do
-      exclude_fields :log_in_code, :remember_digest, :responses, :hardwares, :password_digest
+      exclude_fields :log_in_code, :responses, :hardwares, :password_digest
       field :password do
         css_class do
           bindings[:object].admin? ? nil : 'd-none'

@@ -3,11 +3,22 @@
   <%= simple_form_for :response_detail, url: response_details_path, html: { multipart: true, "data-controller": "questionnaire", "data-action": "submit->questionnaire#submit", "data-questionnaire-response-details-path-value": response_details_path } do |f| %>
     <%= hidden_field_tag :questionnaire_id, @questionnaire.id %>
     <div>
+      <% current_hardware_id = nil %>
+      <% question_count = 0 %>
       <% @user_questionnaire_questions.each_with_index do |item, index| %>
+        <% if current_hardware_id != item.hardware_id %>
+          <% current_hardware_id = item.hardware_id %>
+          <% question_count = 0 %>
+        <% end %>
+        <% question_count += 1 %>
         <% existing_response = @response_details.find_by(question_id: item.question_id) %>
         <div data-questionnaire-target="question" data-item-question-id="<%= item.question_id %>" data-item-hardware-id="<%= item.hardware_id %>" data-item-questionnaire-id="<%= @questionnaire.id %>" data-existing-image="<%= existing_response&.image&.url %>" class="<%= 'd-none' unless index.zero? %>">
-          <h2><%= item.model %></h2>
-          <h2 class="question"><%= index + 1 %>. <%= item.question %></h2>
+          <h2>
+            <a href="javascript:void(0);" onclick="openModal('hardwareModal-<%= item.hardware_id %>')">
+              <%= item.model %>
+            </a>
+          </h2>
+          <h2 class="question"><%= question_count %>. <%= item.question %></h2>
           <% case item.question_type %>
           <% when 'Произвольный Ответ' %>
             <%= f.input "response_details_attributes[#{item.question_id}][answer]", as: :text, label: false, required: item.required, input_html: { value: existing_response&.answer } %>
@@ -39,3 +50,7 @@
     </div>
   <% end %>
 </div>
+
+<% @user_questionnaire_questions.each do |item| %>
+  <%= render 'shared/hardware_modal', modal_id: "hardwareModal-#{item.hardware_id}", title: "#{item.category_hard.name} - #{item.model}", content: "S/N - #{item.series}" %>
+<% end %>
