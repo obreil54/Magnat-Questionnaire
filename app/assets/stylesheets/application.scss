@@ -49,9 +49,22 @@ h2 {
   margin: 8px 0;
 }
 
-li {
+h2 a {
+  color: $main;
+  text-decoration: none;
+}
+
+
+li a{
   font-size: 16px;
   font-weight: 500;
+  text-decoration: none;
+  color: $main;
+  text-align: center;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 .question {
