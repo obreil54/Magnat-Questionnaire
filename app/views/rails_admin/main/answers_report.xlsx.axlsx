@@ -3,35 +3,34 @@ wb.add_worksheet(name: "Отчет по ответам") do |sheet|
 
   sheet.add_row ["Опрос", "Код сотрудника", "Сотрудник", "Оборудование", "Вопрос", "Ответ", "Дата ответа"]
 
-  @responses.each do |response|
-    response.response_details.each do |detail|
-      if detail.question.question_type.name == "Фото" && detail.image.present?
-        row_data = [
-          response.questionnaire.name,
-          response.user.code,
-          response.user.name,
-          detail.hardware&.model,
-          detail.question.name,
-          nil,
-          detail.updated_at.strftime('%d/%m/%y')
-        ]
+  @response_details.each do |detail|
+    response = detail.response
+    if detail.question.question_type.name == "Фото" && detail.image.present?
+      row_data = [
+        response.questionnaire.name,
+        response.user.code,
+        response.user.name,
+        detail.hardware&.model,
+        detail.question.name,
+        nil,
+        detail.updated_at.strftime('%d/%m/%y')
+      ]
 
-        row = sheet.add_row row_data, types: [:string, :string, :string, :string, :string, :string, :string]
+      row = sheet.add_row row_data, types: [:string, :string, :string, :string, :string, :string, :string]
 
-        row.cells[5].value = detail.image.url # Display text for the hyperlink
-        row.cells[5].style = sheet.styles.add_style :fg_color => "0000FF", :sz => 12, :underline => true
-        sheet.add_hyperlink :location => detail.image.url, :ref => row.cells[5]
-      else
-        sheet.add_row [
-          response.questionnaire.name,
-          response.user.code,
-          response.user.name,
-          detail.hardware&.model,
-          detail.question.name,
-          detail.answer, # Insert the answer text directly
-          detail.updated_at.strftime('%d/%m/%y')
-        ], types: [:string, :string, :string, :string, :string, :string, :string]
-      end
+      row.cells[5].value = detail.image.url # Display text for the hyperlink
+      row.cells[5].style = sheet.styles.add_style fg_color: "0000FF", sz: 12, underline: true
+      sheet.add_hyperlink location: detail.image.url, ref: row.cells[5]
+    else
+      sheet.add_row [
+        response.questionnaire.name,
+        response.user.code,
+        response.user.name,
+        detail.hardware&.model,
+        detail.question.name,
+        detail.answer, # Insert the answer text directly
+        detail.updated_at.strftime('%d/%m/%y')
+      ], types: [:string, :string, :string, :string, :string, :string, :string]
     end
   end
 end
