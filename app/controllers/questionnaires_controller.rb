@@ -7,6 +7,7 @@ class QuestionnairesController < ApplicationController
                                                      hardwares.model AS model,
                                                      hardwares.id AS hardware_id,
                                                      hardwares.series AS series,
+                                                     hardwares.category_hard_id AS category_hard_id,
                                                      questions.name AS question,
                                                      questions.id AS question_id,
                                                      questions.updated_at AS question_updated_at,
