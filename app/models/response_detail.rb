@@ -7,6 +7,4 @@ class ResponseDetail < ApplicationRecord
   validates :response, :hardware, :question, presence: true
   validates :answer, presence: true, if: -> { question.required? }
 
-  private
-
 end

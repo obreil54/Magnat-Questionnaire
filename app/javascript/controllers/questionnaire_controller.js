@@ -10,6 +10,7 @@ export default class extends Controller {
     this.showCurrentQuestion(0);
     this.lastSelectedImages = {};
     this.hasUnsavedChanges = false;
+    this.initInputListeners();
   }
 
   initInputListeners() {
@@ -35,28 +36,33 @@ export default class extends Controller {
     if (!this.validateResponse()) {
       return;
     }
-    this.displayLoadingAnimation(true);
-    await this.sendResponse();
+    if (this.hasUnsavedChanges) {
+      this.displayLoadingAnimation(true);
+      await this.sendResponse();
+      this.displayLoadingAnimation(false);
+    }
     const currentIndex = this.currentQuestionIndex();
     if (currentIndex < this.questionTargets.length - 1) {
       this.showCurrentQuestion(currentIndex + 1);
     }
-    this.displayLoadingAnimation(false);
     this.updateButtonVisibility();
   }
+
 
 
   async previous() {
     if (!this.validateResponse()) {
       return;
     }
-    this.displayLoadingAnimation(true);
-    await this.sendResponse();
+    if (this.hasUnsavedChanges) {
+      this.displayLoadingAnimation(true);
+      await this.sendResponse();
+      this.displayLoadingAnimation(false);
+    }
     const currentIndex = this.currentQuestionIndex();
     if (currentIndex > 0) {
       this.showCurrentQuestion(currentIndex - 1);
     }
-    this.displayLoadingAnimation(false);
     this.updateButtonVisibility();
   }
 
@@ -191,9 +197,13 @@ export default class extends Controller {
     });
 
     if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Server error response:", errorData.error);
+      alert(errorData.error || "Произошла ошибка. Пожалуйста, попробуйте еще раз.");
       throw new Error("Network response was not ok");
     }
 
+    this.hasUnsavedChanges = false;
     return response;
   }
 
