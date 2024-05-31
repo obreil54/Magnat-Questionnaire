@@ -53,11 +53,11 @@ class ActiveStorage::Service::CustomFileService < ActiveStorage::Service
     tempfile.close unless tempfile.closed?
   end
 
-  def delete(relative_path)
-    blob = ActiveStorage::Blob.find_by(key: relative_path)
+  def delete(key)
+    blob = ActiveStorage::Blob.find_by(key: key)
 
     if blob.nil?
-      Rails.logger.error "Blob not found for key: #{relative_path}"
+      Rails.logger.error "Blob not found for key: #{key}"
     end
 
     custom_path = blob.metadata["custom_path"]

@@ -9,6 +9,18 @@ export default class extends Controller {
     console.log("Questionnaire controller initialized test for 29/05/2024")
     this.showCurrentQuestion(0);
     this.lastSelectedImages = {};
+    this.hasUnsavedChanges = false;
+  }
+
+  initInputListeners() {
+    this.questionTargets.forEach((question) => {
+      const inputs = question.querySelectorAll("input, select, textarea");
+      inputs.forEach((input) => {
+        input.addEventListener("change", () => {
+          this.hasUnsavedChanges = true;
+        });
+      });
+    });
   }
 
   displayLoadingAnimation(show) {
@@ -19,43 +31,32 @@ export default class extends Controller {
     }
   }
 
-  next() {
+  async next() {
     if (!this.validateResponse()) {
       return;
     }
     this.displayLoadingAnimation(true);
+    await this.sendResponse();
     const currentIndex = this.currentQuestionIndex();
-    this.sendResponse().then(response => {
-      if (response.ok) {
-        if (currentIndex < this.questionTargets.length - 1) {
-          this.showCurrentQuestion(currentIndex + 1);
-        }
-        this.displayLoadingAnimation(false);
-        this.updateButtonVisibility();
-      } else {
-        response.json().then(data => {
-          console.error("Server error response:", data.error);
-          alert(data.error || "Произошла ошибка. Пожалуйста, попробуйте еще раз.");
-          this.displayLoadingAnimation(false);
-        }).catch(() => {
-          console.error('Error parsing JSON response:', error);
-          alert("Произошла ошибка. Пожалуйста, попробуйте еще раз.");
-          this.displayLoadingAnimation(false);
-        });
-      }
-    }).catch(() => {
-      console.error('Fetch error:', error);
-      alert("Произошла ошибка. Пожалуйста, попробуйте еще раз.");
-      this.displayLoadingAnimation(false);
-    });
+    if (currentIndex < this.questionTargets.length - 1) {
+      this.showCurrentQuestion(currentIndex + 1);
+    }
+    this.displayLoadingAnimation(false);
+    this.updateButtonVisibility();
   }
 
 
-  previous() {
+  async previous() {
+    if (!this.validateResponse()) {
+      return;
+    }
+    this.displayLoadingAnimation(true);
+    await this.sendResponse();
     const currentIndex = this.currentQuestionIndex();
     if (currentIndex > 0) {
       this.showCurrentQuestion(currentIndex - 1);
     }
+    this.displayLoadingAnimation(false);
     this.updateButtonVisibility();
   }
 
@@ -103,7 +104,8 @@ export default class extends Controller {
       if (i === index && element.dataset.existingImage) {
         this.updateImagePreview(element);
       }
-    })
+    });
+    this.hasUnsavedChanges = false;
   }
 
   updateImagePreview(questionElement) {
@@ -133,10 +135,11 @@ export default class extends Controller {
       };
       reader.readAsDataURL(file);
       this.lastSelectedImages[currentQuestion.dataset.itemQuestionId] = file;
+      this.hasUnsavedChanges = true;
     }
   }
 
-  submit(event) {
+  async submit(event) {
     event.preventDefault();
     if (!this.validateResponse()) {
       return;
@@ -144,44 +147,25 @@ export default class extends Controller {
     this.displayLoadingAnimation(true);
 
     const isFinal = true;
-    this.sendResponse(isFinal).then(response => {
-      if (response.ok) {
-        this.displayLoadingAnimation(false);
-        window.location.href = "/success";
-      } else {
-      response.json().then(data => {
-          console.error('Server error response:', data);
-          alert(data.error || "Произошла ошибка. Пожалуйста, попробуйте еще раз.");
-          this.displayLoadingAnimation(false);
-        }).catch(() => {
-          console.error('Error parsing JSON response:', error);
-          alert("Произошла ошибка. Пожалуйста, попробуйте еще раз.");
-          this.displayLoadingAnimation(false);
-        });
-      }
-    }).catch(() => {
-      console.error('Fetch error:', error);
-      alert(data.error || "Произошла ошибка. Пожалуйста, попробуйте еще раз.");
-      this.displayLoadingAnimation(false);
-    });
+    await this.sendResponse(isFinal);
+    this.displayLoadingAnimation(false);
+    window.location.href = "/success";
   }
 
-  sendResponse(isFinal = false) {
+  async sendResponse(isFinal = false) {
     const currentIndex = this.currentQuestionIndex();
     const formData = new FormData(this.element);
     const currentQuestion = this.questionTargets[currentIndex];
     const inputs = currentQuestion.querySelectorAll("input, select, textarea");
 
     inputs.forEach(input => {
-      const name = input.name
-      const value = input.value
+      const name = input.name;
+      const value = input.value;
       if (input.type === "file") {
         const file = input.files[0];
         if (file) {
-          console.log("Submitting regular file", file)
           formData.append("answer", file);
         } else if (this.lastSelectedImages[currentQuestion.dataset.itemQuestionId]) {
-          console.log("Submitting last selected image", this.lastSelectedImages[currentQuestion.dataset.itemQuestionId])
           formData.append("answer", this.lastSelectedImages[currentQuestion.dataset.itemQuestionId]);
         } else if (currentQuestion.dataset.existingImage) {
           formData.append("keep_existing_image", true);
@@ -189,7 +173,7 @@ export default class extends Controller {
       } else {
         formData.append("answer", value);
       }
-    })
+    });
 
     formData.append("question_id", currentQuestion.dataset.itemQuestionId);
     formData.append("hardware_id", currentQuestion.dataset.itemHardwareId);
@@ -198,13 +182,19 @@ export default class extends Controller {
       formData.append("is_final", true);
     }
 
-    return fetch(this.responseDetailsPathValue, {
+    const response = await fetch(this.responseDetailsPathValue, {
       method: 'POST',
       headers: {
         'X-CSRF-Token': document.querySelector("[name='csrf-token']").content,
       },
       body: formData
     });
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    return response;
   }
 
   findQuestionIndex(input) {
