@@ -32,8 +32,8 @@
             <td><%= link_to @questionnaire.name, rails_admin.show_path(model_name: 'questionnaire', id: @questionnaire.id) %></td>
             <td><%= item.user.code %></td>
             <td><%= link_to item.user.name, rails_admin.show_path(model_name: 'user', id: item.user.id) %></td>
-            <td><%= item.created_at.strftime('%d/%m/%y') %></td>
-            <td><%= item.end_date ? item.end_date.strftime('%d/%m/%y') : 'Не завершен' %></td>
+            <td><%= item.created_at.strftime('%d/%m/%y %H:%M') %></td>
+            <td><%= item.end_date ? item.end_date.strftime('%d/%m/%y %H:%M') : 'Не завершен' %></td>
             <td><%= item.end_date ? "#{((item.end_date - item.created_at)/60).round} Минуты" : "" %></td>
           </tr>
         <% else %>

@@ -5,6 +5,8 @@ require 'rails_admin/config/actions/questionnaire_staff_status_report'
 
 RailsAdmin.config do |config|
 
+  config.main_app_name = ["it-audit Админ", "Версия: #{ENV['MAGNAT_VERSION']}"]
+
   config.asset_source = :sprockets
 
 

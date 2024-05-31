@@ -19,7 +19,7 @@
 
 
 
-<% if params[:questionnaire_id].present? && @responses.present? %>
+<% if params[:questionnaire_id].present? && @response_details.present? %>
   <table class="table table-condensed table-striped table-hover mt-5">
     <thead>
       <tr>
@@ -33,24 +33,22 @@
       </tr>
     </thead>
     <tbody>
-      <% @responses.each do |response| %>
-        <% response.response_details.each do |answer| %>
-          <tr>
-            <td><%= link_to response.questionnaire.name, rails_admin.show_path(model_name: 'questionnaire', id: response.questionnaire.id) %></td>
-            <td><%= response.user.code %></td>
-            <td><%= link_to response.user.name, rails_admin.show_path(model_name: 'user', id: response.user.id) %></td>
-            <td><%= link_to answer.hardware&.model, rails_admin.show_path(model_name: 'hardware', id: answer.hardware.id) %></td>
-            <td><%= answer.question.name %></td>
-            <td>
-              <% if answer.question.question_type.name == "Фото" %>
-                <%= link_to image_tag(answer.image.url, class:"img-thumbnail", size: "100x100"), answer.image.url, target: "_blank"  %>
-              <% else %>
-                <%= answer.answer %>
-              <% end %>
-            </td>
-            <td><%= answer.updated_at.strftime('%d/%m/%y') %></td>
-          </tr>
-        <% end %>
+      <% @response_details.each do |response_detail| %>
+        <tr>
+          <td><%= link_to response_detail.response.questionnaire.name, rails_admin.show_path(model_name: 'questionnaire', id: response_detail.response.questionnaire.id) %></td>
+          <td><%= response_detail.response.user.code %></td>
+          <td><%= link_to response_detail.response.user.name, rails_admin.show_path(model_name: 'user', id: response_detail.response.user.id) %></td>
+          <td><%= link_to response_detail.hardware&.model, rails_admin.show_path(model_name: 'hardware', id: response_detail.hardware.id) %></td>
+          <td><%= response_detail.question.name %></td>
+          <td>
+            <% if response_detail.question.question_type.name == "Фото" %>
+              <%= link_to image_tag(response_detail.image.url, class:"img-thumbnail", size: "100x100"), response_detail.image.url, target: "_blank"  %>
+            <% else %>
+              <%= response_detail.answer %>
+            <% end %>
+          </td>
+          <td><%= response_detail.updated_at.strftime('%d/%m/%y') %></td>
+        </tr>
       <% end %>
     </tbody>
   </table>

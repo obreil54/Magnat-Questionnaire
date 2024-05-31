@@ -9,8 +9,8 @@ wb.add_worksheet(name: "Статус по сотрудникам") do |sheet|
         @questionnaire.name,
         item.user.code,
         item.user.name,
-        item.created_at.strftime('%d/%m/%y'),
-        item.end_date ? item.end_date.strftime('%d/%m/%y') : 'Не завершен',
+        item.created_at.strftime('%d/%m/%y %H:%M'),
+        item.end_date ? item.end_date.strftime('%d/%m/%y %H:%M') : 'Не завершен',
         item.end_date ? "#{((item.end_date - item.created_at)/60).round} Минуты" : ""
       ], types: [:string, :string, :string, :string, :string, :string]
     else

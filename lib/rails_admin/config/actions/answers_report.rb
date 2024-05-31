@@ -17,22 +17,24 @@ module RailsAdmin
 
         register_instance_option :controller do
           Proc.new do
-            @responses = []
+            @response_details = []
 
             if params[:questionnaire_id].present?
-              @responses = Response.includes(user: [], response_details: [question: [:category_hard], hardware: []])
-                                   .where(questionnaire_id: params[:questionnaire_id])
-                                   .joins(:user)
-                                   .where(users: { status: true, admin: false })
-                                   .distinct
+              @response_details = ResponseDetail.includes(response: [:user, :questionnaire], question: [:category_hard], hardware: [])
+              .where(responses: { questionnaire_id: params[:questionnaire_id] })
+              .joins(response: :user)
+              .where(users: { status: true, admin: false })
+              .distinct
 
               if params[:category_hard_id].present?
-                @responses = @responses.joins(response_details: { question: :category_hard })
-                                       .where(category_hards: { id: params[:category_hard_id] })
-                                       .distinct
+                @response_details = @response_details.joins(question: :category_hard)
+                .where(category_hards: { id: params[:category_hard_id] })
+                .distinct
               end
 
-              @responses = @responses.where('responses.user_id = ?', params[:user_id]) if params[:user_id].present?
+              if params[:user_id].present?
+                @response_details = @response_details.where(responses: { user_id: params[:user_id] })
+              end
             end
 
             respond_to do |format|
