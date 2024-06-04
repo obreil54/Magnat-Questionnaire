@@ -145,7 +145,7 @@ ru:
       reset_filters: "Сбросить фильтры"
     flash:
       successful: "Удалось успешно %{action}"
-      error: "Не удалось %{action} %{name}"
+      error: "Не удалось %{action}"
       noaction: "Никаких изменений не выполнено"
       model_not_found: "Модель '%{model}' не найдена"
       object_not_found: "Объект %{model} с id '%{id}' не найден"
@@ -215,7 +215,7 @@ ru:
       import:
         title: "Импорт %{model_label_plural}"
         menu: "Импорт"
-        breadcrumb: "импорт"
+        breadcrumb: "Импорт"
         done: "импортировать"
       questionnaire_staff_status_report:
         title: "Статус по сотрудникам"
@@ -286,3 +286,4 @@ ru:
       import_success:
         create: "Успешно создан %{name}"
         update: "Успешно обновлен %{name}"
+      association_not_found: "Ассоциированная модель не найдена: %{error}"
