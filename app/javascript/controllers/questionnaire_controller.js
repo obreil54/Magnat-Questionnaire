@@ -34,34 +34,40 @@ export default class extends Controller {
 
   async next() {
     if (!this.validateResponse()) {
-      return;
+        return;
     }
     if (this.hasUnsavedChanges) {
-      this.displayLoadingAnimation(true);
-      await this.sendResponse();
-      this.displayLoadingAnimation(false);
+        this.displayLoadingAnimation(true);
+        try {
+            await this.sendResponse();
+        } catch (error) {
+            this.displayLoadingAnimation(false);
+            return;
+        }
     }
     const currentIndex = this.currentQuestionIndex();
     if (currentIndex < this.questionTargets.length - 1) {
-      this.showCurrentQuestion(currentIndex + 1);
+        this.showCurrentQuestion(currentIndex + 1);
     }
     this.updateButtonVisibility();
   }
 
-
-
   async previous() {
     if (!this.validateResponse()) {
-      return;
+        return;
     }
     if (this.hasUnsavedChanges) {
-      this.displayLoadingAnimation(true);
-      await this.sendResponse();
-      this.displayLoadingAnimation(false);
+        this.displayLoadingAnimation(true);
+        try {
+            await this.sendResponse();
+        } catch (error) {
+            this.displayLoadingAnimation(false);
+            return;
+        }
     }
     const currentIndex = this.currentQuestionIndex();
     if (currentIndex > 0) {
-      this.showCurrentQuestion(currentIndex - 1);
+        this.showCurrentQuestion(currentIndex - 1);
     }
     this.updateButtonVisibility();
   }
@@ -148,14 +154,17 @@ export default class extends Controller {
   async submit(event) {
     event.preventDefault();
     if (!this.validateResponse()) {
-      return;
+        return;
     }
     this.displayLoadingAnimation(true);
 
-    const isFinal = true;
-    await this.sendResponse(isFinal);
-    this.displayLoadingAnimation(false);
-    window.location.href = "/success";
+    try {
+        const isFinal = true;
+        await this.sendResponse(isFinal);
+        window.location.href = "/success";
+    } catch (error) {
+        this.displayLoadingAnimation(false);
+    }
   }
 
   async sendResponse(isFinal = false) {
@@ -165,46 +174,61 @@ export default class extends Controller {
     const inputs = currentQuestion.querySelectorAll("input, select, textarea");
 
     inputs.forEach(input => {
-      const name = input.name;
-      const value = input.value;
-      if (input.type === "file") {
-        const file = input.files[0];
-        if (file) {
-          formData.append("answer", file);
-        } else if (this.lastSelectedImages[currentQuestion.dataset.itemQuestionId]) {
-          formData.append("answer", this.lastSelectedImages[currentQuestion.dataset.itemQuestionId]);
-        } else if (currentQuestion.dataset.existingImage) {
-          formData.append("keep_existing_image", true);
+        const name = input.name;
+        const value = input.value;
+        if (input.type === "file") {
+            const file = input.files[0];
+            if (file) {
+                formData.append("answer", file);
+            } else if (this.lastSelectedImages[currentQuestion.dataset.itemQuestionId]) {
+                formData.append("answer", this.lastSelectedImages[currentQuestion.dataset.itemQuestionId]);
+            } else if (currentQuestion.dataset.existingImage) {
+                formData.append("keep_existing_image", true);
+            }
+        } else {
+            formData.append("answer", value);
         }
-      } else {
-        formData.append("answer", value);
-      }
     });
 
     formData.append("question_id", currentQuestion.dataset.itemQuestionId);
     formData.append("hardware_id", currentQuestion.dataset.itemHardwareId);
     formData.append("questionnaire_id", currentQuestion.dataset.itemQuestionnaireId);
     if (isFinal) {
-      formData.append("is_final", true);
+        formData.append("is_final", true);
     }
 
-    const response = await fetch(this.responseDetailsPathValue, {
-      method: 'POST',
-      headers: {
-        'X-CSRF-Token': document.querySelector("[name='csrf-token']").content,
-      },
-      body: formData
-    });
+    try {
+        const response = await fetch(this.responseDetailsPathValue, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-Token': document.querySelector("[name='csrf-token']").content,
+            },
+            body: formData
+        });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Server error response:", errorData.error);
-      alert(errorData.error || "Произошла ошибка. Пожалуйста, попробуйте еще раз.");
-      throw new Error("Network response was not ok");
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || `HTTP Status ${response.status}`);
+        }
+
+        this.hasUnsavedChanges = false;
+        return response;
+
+    } catch (error) {
+        console.error("Error sending response:", error);
+        this.displayErrorMessage(currentQuestion, error.message);
+        throw error;
+    } finally {
+        this.displayLoadingAnimation(false);
     }
+  }
 
-    this.hasUnsavedChanges = false;
-    return response;
+  displayErrorMessage(questionElement, message) {
+    const errorMessageDiv = questionElement.querySelector("[data-questionnaire-target='error']");
+    if (errorMessageDiv) {
+      errorMessageDiv.style.display = "block";
+      errorMessageDiv.textContent = message;
+    }
   }
 
   findQuestionIndex(input) {

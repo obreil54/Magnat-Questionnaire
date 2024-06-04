@@ -1,6 +1,7 @@
 <div class="card">
-  <h1>Здраствуйте, <%= @user.name %></h1>
+  <h1>Здравствуйте, <%= @user.name %></h1>
   <% if @hardware.present? %>
+    <h2>Ваша Техника:</h2>
     <ul>
       <% @hardware.each do |hardware| %>
         <li class ="hardware">
