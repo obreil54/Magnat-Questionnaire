@@ -2,53 +2,58 @@ class ResponseDetailsController < ApplicationController
   before_action :check_image_question_and_validate_settings, only: [:create]
 
   def create
-    question_id = params[:question_id]
-    answer = params[:answer]
-    questionnaire_id = params[:questionnaire_id]
-    hardware_id = params[:hardware_id]
-    keep_existing_image = params[:keep_existing_image] == "true"
+    begin
+      question_id = params[:question_id]
+      answer = params[:answer]
+      questionnaire_id = params[:questionnaire_id]
+      hardware_id = params[:hardware_id]
+      keep_existing_image = params[:keep_existing_image] == "true"
 
-    response = Response.find_by(questionnaire_id: questionnaire_id, user_id: current_user.id)
-    response_detail = response.response_details.find_or_initialize_by(question_id: question_id, hardware_id: hardware_id)
+      response = Response.find_by(questionnaire_id: questionnaire_id, user_id: current_user.id)
+      response_detail = response.response_details.find_or_initialize_by(question_id: question_id, hardware_id: hardware_id)
 
-    image_file = params.dig("response_details_attributes", question_id.to_s, "image")
-    if image_file.blank? && answer.is_a?(ActionDispatch::Http::UploadedFile)
-      image_file = answer
-    end
+      image_file = params.dig("response_details_attributes", question_id.to_s, "image")
+      if image_file.blank? && answer.is_a?(ActionDispatch::Http::UploadedFile)
+        image_file = answer
+      end
 
-    if image_file.present? && image_file.is_a?(ActionDispatch::Http::UploadedFile)
-      relative_path = PhotoPathGenerator.generate_path(current_user, response_detail.hardware, response.created_at)
-      file_name = PhotoPathGenerator.generate_filename(response_detail.hardware.series, response.created_at)
-      full_relative_path = File.join(relative_path, file_name)
+      if image_file.present? && image_file.is_a?(ActionDispatch::Http::UploadedFile)
+        relative_path = PhotoPathGenerator.generate_path(current_user, response_detail.hardware, response.created_at)
+        file_name = PhotoPathGenerator.generate_filename(response_detail.hardware.series, response.created_at)
+        full_relative_path = File.join(relative_path, file_name)
 
-      Rails.logger.debug "Generated Path: #{relative_path}"
-      Rails.logger.debug "Generated Filename: #{file_name}"
-      Rails.logger.debug "Full Relative Path: #{full_relative_path}"
+        Rails.logger.debug "Generated Path: #{relative_path}"
+        Rails.logger.debug "Generated Filename: #{file_name}"
+        Rails.logger.debug "Full Relative Path: #{full_relative_path}"
 
-      blob = ActiveStorage::Blob.create_and_upload!(
-        io: image_file,
-        filename: file_name,
-        metadata: { custom_path: relative_path }
-      )
+        blob = ActiveStorage::Blob.create_and_upload!(
+          io: image_file,
+          filename: file_name,
+          metadata: { custom_path: relative_path }
+        )
 
-      response_detail.image.attach(blob)
-      response_detail.answer = full_relative_path
-    elsif keep_existing_image && response_detail.image.attached?
-      response_detail.answer = response_detail.image.url unless response_detail.answer.present?
-    else
-      response_detail.answer = answer if answer.present? && !image_file.present?
-    end
+        response_detail.image.attach(blob)
+        response_detail.answer = full_relative_path
+      elsif keep_existing_image && response_detail.image.attached?
+        response_detail.answer = response_detail.image.url unless response_detail.answer.present?
+      else
+        response_detail.answer = answer if answer.present? && !image_file.present?
+      end
 
 
-    if params[:is_final] == "true"
-      response.end_date = DateTime.now
-      response.save
-    end
+      if params[:is_final] == "true"
+        response.end_date = DateTime.now
+        response.save
+      end
 
-    if response_detail.save
-      head :ok
-    else
-      render json: { errors: response_detail.errors.full_messages }, status: :unprocessable_entity
+      if response_detail.save
+        head :ok
+      else
+        render json: { errors: response_detail.errors.full_messages }, status: :unprocessable_entity
+      end
+    rescue => e
+      Rails.logger.error "Internal Server Error: #{e.message}"
+      render json: { error: e.message }, status: :internal_server_error
     end
   end
 

@@ -2,7 +2,7 @@ class UsersController < ApplicationController
   before_action :require_login
   def show
     @user = current_user
-    @hardware = current_user.hardwares
+    @hardware = current_user.hardwares.where(status: true)
     @questionnaire = Questionnaire.find_by(status: true)
   end
 
