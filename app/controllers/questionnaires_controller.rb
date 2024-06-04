@@ -1,7 +1,7 @@
 class QuestionnairesController < ApplicationController
   def show
     @user_questionnaire_questions = Hardware.joins(category_hard: { questions: :question_type })
-                                            .where(user: current_user)
+                                            .where(user: current_user, status: true)
                                             .where(questions: { status: true })
                                             .select('category_hards.name AS category,
                                                      hardwares.model AS model,
@@ -19,5 +19,7 @@ class QuestionnairesController < ApplicationController
     Response.create!(questionnaire: @questionnaire, user: current_user) unless Response.where(questionnaire: @questionnaire, user: current_user).exists?
     @response = Response.find_by(questionnaire: @questionnaire, user: current_user)
     @response_details = @response&.response_details || []
+
+    @no_questions_assigned = @user_questionnaire_questions.empty?
   end
 end
