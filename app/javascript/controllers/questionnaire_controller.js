@@ -53,7 +53,13 @@ export default class extends Controller {
   }
 
   async previous() {
+    const currentIndex = this.currentQuestionIndex();
+
     if (!this.validateResponse()) {
+        if (currentIndex > 0) {
+            this.showCurrentQuestion(currentIndex - 1);
+        }
+        this.updateButtonVisibility();
         return;
     }
     if (this.hasUnsavedChanges) {
@@ -65,7 +71,6 @@ export default class extends Controller {
             return;
         }
     }
-    const currentIndex = this.currentQuestionIndex();
     if (currentIndex > 0) {
         this.showCurrentQuestion(currentIndex - 1);
     }
