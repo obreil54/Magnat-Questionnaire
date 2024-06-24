@@ -97,6 +97,7 @@ export default class extends Controller {
     } else {
       const fileSelected = input.files.length > 0;
       const existingImage = currentQuestion.dataset.existingImage && currentQuestion.dataset.existingImage.trim() !== "";
+      const lastSelectedImage = this.lastSelectedImages[currentQuestion.dataset.itemQuestionId];
       isValid = fileSelected || existingImage || this.lastSelectedImages[currentQuestion.dataset.itemQuestionId];
     }
 
@@ -143,7 +144,8 @@ export default class extends Controller {
     const index = this.sourceTargets.indexOf(event.target);
     const previewTarget = this.previewTargets[index];
     const file = event.target.files[0];
-    const currentQuestion = this.questionTargets[index];
+    const currentIndex = this.currentQuestionIndex();
+    const currentQuestion = this.questionTargets[currentIndex];
 
     if (file && file.type.match('image')) {
       const reader = new FileReader();
