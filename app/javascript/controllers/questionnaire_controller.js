@@ -6,7 +6,7 @@ export default class extends Controller {
   static values = { responseDetailsPath: String }
 
   initialize() {
-    console.log("Questionnaire controller initialized test for 29/05/2024")
+    console.log("Questionnaire controller initialized test for 24/06/2024")
     this.showCurrentQuestion(0);
     this.lastSelectedImages = {};
     this.hasUnsavedChanges = false;
