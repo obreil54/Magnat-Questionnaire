@@ -189,6 +189,7 @@ export default class extends Controller {
                 formData.append("answer", file);
             } else if (this.lastSelectedImages[currentQuestion.dataset.itemQuestionId]) {
                 formData.append("answer", this.lastSelectedImages[currentQuestion.dataset.itemQuestionId]);
+                this.lastSelectedImages[currentQuestion.dataset.itemQuestionId] = null;
             } else if (currentQuestion.dataset.existingImage) {
                 formData.append("keep_existing_image", true);
             }
