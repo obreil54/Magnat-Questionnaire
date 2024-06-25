@@ -24,6 +24,7 @@ module RailsAdmin
               .where(responses: { questionnaire_id: params[:questionnaire_id] })
               .joins(response: :user)
               .where(users: { status: true, admin: false })
+              .order('response_details.created_at DESC')
               .distinct
 
               if params[:category_hard_id].present?
