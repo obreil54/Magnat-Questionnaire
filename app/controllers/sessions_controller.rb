@@ -5,7 +5,7 @@ class SessionsController < ApplicationController
   end
 
   def create
-    @user = User.find_by(email: params[:session][:email])
+    @user = User.find_by(email: params[:session][:email].downcase)
     if @user.nil?
       redirect_to login_path, alert: "Пользователь с email #{params[:session][:email]} не зарегистрирован в системе!"
     elsif @user.status == false
