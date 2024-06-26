@@ -27,7 +27,9 @@ RailsAdmin.config do |config|
     export
     bulk_delete
     show
-    edit
+    edit do
+      except ['ResponseDetail', 'Response']
+    end
     delete
     show_in_app
 
@@ -176,6 +178,38 @@ RailsAdmin.config do |config|
       field :category_hard do
         label do
           'category_hard'
+        end
+      end
+    end
+  end
+
+  config.model "ResponseDetail" do
+    list do
+      include_all_fields
+      field :image do
+        thumb_method :url
+        pretty_value do
+          if bindings[:object].image.present?
+            url = bindings[:object].image.url
+            bindings[:view].link_to(url, target: "_blank") do
+              bindings[:view].tag(:img, { src: url, class: "img-thumbnail", width: '100', height: '100'})
+            end
+          end
+        end
+      end
+    end
+
+    show do
+      include_all_fields
+      field :image do
+        thumb_method :url
+        pretty_value do
+          if bindings[:object].image.present?
+            url = bindings[:object].image.url
+            bindings[:view].link_to(url, target: "_blank") do
+              bindings[:view].tag(:img, { src: url, class: "img-thumbnail", width: '100', height: '100'})
+            end
+          end
         end
       end
     end
