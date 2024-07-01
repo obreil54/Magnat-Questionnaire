@@ -13,7 +13,7 @@ wb.add_worksheet(name: "Отчет по ответам") do |sheet|
         detail.hardware&.model,
         detail.question.name,
         nil,
-        detail.updated_at.strftime('%d/%m/%y')
+        detail.updated_at.strftime(('%d/%m/%y %H:%M'))
       ]
 
       row = sheet.add_row row_data, types: [:string, :string, :string, :string, :string, :string, :string]
@@ -29,7 +29,7 @@ wb.add_worksheet(name: "Отчет по ответам") do |sheet|
         detail.hardware&.model,
         detail.question.name,
         detail.answer, # Insert the answer text directly
-        detail.updated_at.strftime('%d/%m/%y')
+        detail.updated_at.strftime('%d/%m/%y %H:%M')
       ], types: [:string, :string, :string, :string, :string, :string, :string]
     end
   end
