@@ -59,6 +59,7 @@ gem "bcrypt"
 gem 'axlsx'
 gem 'axlsx_rails'
 gem 'image_processing', '~> 1.2'
+gem 'rack-cors', require: 'rack/cors'
 
 group :development, :test do
   gem "dotenv-rails"
