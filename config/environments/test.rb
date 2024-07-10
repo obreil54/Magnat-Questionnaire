@@ -66,4 +66,7 @@ Rails.application.configure do
   config.assets.quiet = true
   config.assets.debug = true
   config.assets.compile = true
+
+  config.hosts << "localhost:3000"
+  config.hosts << "c0a7-64-222-221-177.ngrok-free.app"
 end
