@@ -17,9 +17,7 @@ class ActiveStorage::Service::CustomFileService < ActiveStorage::Service
     request["X-Request-Token"] = @token
     request.set_form({'file' => io, 'filePath' => full_path}, 'multipart/form-data')
 
-    Rails.logger.debug "Uploading to Path: #{full_path}"
-
-    response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https', read_timeout: 500, open_timeout: 500) do |http|
+    response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https', read_timeout: 1000, open_timeout: 1000) do |http|
       http.request(request)
     end
     unless response.is_a?(Net::HTTPSuccess)
