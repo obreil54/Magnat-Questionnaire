@@ -1,6 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Connects to data-controller="questionnaire"
 export default class extends Controller {
   static targets = ["question", "submit", "next", "back", "source", "preview", "error", "loading"]
   static values = { responseDetailsPath: String }
