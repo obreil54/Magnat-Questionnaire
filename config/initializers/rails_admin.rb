@@ -28,7 +28,7 @@ RailsAdmin.config do |config|
     bulk_delete
     show
     edit do
-      except ['ResponseDetail', 'Response']
+      except ['ResponseDetail']
     end
     delete
     show_in_app
