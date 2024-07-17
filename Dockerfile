@@ -1,31 +1,34 @@
-# syntax = docker/dockerfile:1
-
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version and Gemfile
+
 ARG RUBY_VERSION=3.1.2
-FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim as base
 
-# Rails app lives here
-WORKDIR /rails
+# Throw-away build stage to reduce size of final image
+FROM registry.magnat.ru/devops/docker-images/ruby-build:$RUBY_VERSION AS build
 
-# Set production environment
 ENV RAILS_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development"
 
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libvips postgresql-client nodejs && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+WORKDIR /rails
 
-# Throw-away build stage to reduce size of final image
-FROM base as build
+ARG POSTGRES_HOST="postgresql"
+ENV POSTGRES_HOST=$POSTGRES_HOST
 
-# Install packages needed to build gems
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential git libpq-dev pkg-config libicu-dev
+ARG POSTGRES_DB="database"
+ENV POSTGRES_DB=$POSTGRES_DB
+
+ARG POSTGRES_USER="user"
+ENV POSTGRES_USER=$POSTGRES_USER
+
+ARG POSTGRES_PASSWORD="password"
+ENV POSTGRES_PASSWORD=$POSTGRES_PASSWORD
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./
+
+RUN bundle config mirror.https://rubygems.org http://nexus.magnat.lan:8081/repository/gem-proxy/
+
 RUN bundle install && bundle config set frozen false && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     bundle exec bootsnap precompile --gemfile
@@ -36,14 +39,21 @@ COPY . .
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
 
+
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
 RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 
-
 # Final stage for app image
-FROM base
+FROM registry.magnat.ru/devops/docker-images/ruby:$RUBY_VERSION
+LABEL authors="Sadovnik Vladimir <sadovnik.vv@magnat.ru>"
+# Rails app lives here
+WORKDIR /rails
 
-# Install packages needed for deployment
+# Set production environment
+ENV RAILS_ENV="production" \
+    BUNDLE_DEPLOYMENT="1" \
+    BUNDLE_PATH="/usr/local/bundle" \
+    BUNDLE_WITHOUT="development"
 
 # Copy built artifacts: gems, application
 COPY --from=build /usr/local/bundle /usr/local/bundle
@@ -52,6 +62,7 @@ COPY --from=build /rails /rails
 # Run and own only the runtime files as a non-root user for security
 RUN useradd rails --create-home --shell /bin/bash && \
     chown -R rails:rails db log storage tmp
+
 USER rails:rails
 
 # Entrypoint prepares the database.
