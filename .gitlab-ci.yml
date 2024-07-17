@@ -94,3 +94,18 @@ deploy to dev:
   tags:
     - docker
 
+
+deploy to prod:
+  <<: *deploy_docker_compose
+  when:
+    manual
+  environment:
+    name: production
+  only:
+    - main
+  needs:
+    - job: build
+      optional: true
+  tags:
+    - docker
+
