@@ -79,7 +79,8 @@ test:
 #
 production:
   <<: *default
-  database: magnat_questionnaire_production
-  username: magnat_questionnaire
-  password: <%= ENV["MAGNAT_QUESTIONNAIRE_DATABASE_PASSWORD"] %>
-  host: db
+  database: <%= ENV["POSTGRES_DB"] %>
+  username: <%= ENV["POSTGRES_USER"] %>
+  password: <%= ENV["POSTGRES_PASSWORD"] %>
+  host: <%= ENV["POSTGRES_HOST"] %>
+
