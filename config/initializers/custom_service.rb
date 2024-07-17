@@ -7,11 +7,19 @@ Rails.application.config.to_prepare do
 
   Rails.application.config.active_storage.service_configurations ||= storage_config
 
-  custom_service_config = {
-    service: "CustomFile",
-    token: Setting.fileapi_token,
-    base_url: Setting.fileapi_url
-  }
+  if ActiveRecord::Base.connection.table_exists? 'settings'
+    custom_service_config = {
+      service: "CustomFile",
+      token: Setting.fileapi_token,
+      base_url: Setting.fileapi_url
+    }
+  else
+    custom_service_config = {
+      service: "CustomFile",
+      token: "",
+      base_url: ""
+    }
+  end
 
   Rails.application.config.active_storage.service_configurations[:custom_service] = custom_service_config
 
