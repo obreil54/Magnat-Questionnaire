@@ -22,16 +22,5 @@ module MagnatQuestionnaire
     config.i18n.default_locale = :ru
     config.time_zone = "Europe/Moscow"
     config.active_record.default_timezone = :local
-
-    config.middleware.insert_before 0, Rack::Cors do
-      allow do
-        origins '*'
-        resource '*',
-          headers: :any,
-          methods: [:get, :post, :put, :patch, :delete, :options, :head],
-          expose: ['Access-Control-Allow-Origin'],
-          max_age: 600
-      end
-    end
   end
 end
