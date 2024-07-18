@@ -1,15 +1,9 @@
 import { Controller } from "@hotwired/stimulus"
-import axios from "axios";
-import axiosRetry from "axios-retry";
-
-axiosRetry(axios, { retries: 3,
-  retryDelay: axiosRetry.exponentialDelay,
-  shouldResetTimeout: true,
-});
 
 export default class extends Controller {
   static targets = ["question", "submit", "next", "back", "source", "preview", "error", "loading"]
   static values = { responseDetailsPath: String }
+
 
   initialize() {
     console.log("Questionnaire controller initialized test for 24/06/2024")
@@ -40,20 +34,20 @@ export default class extends Controller {
 
   async next() {
     if (!this.validateResponse()) {
-        return;
+      return;
     }
     if (this.hasUnsavedChanges) {
-        this.displayLoadingAnimation(true);
-        try {
-            await this.sendResponse();
-        } catch (error) {
-            this.displayLoadingAnimation(false);
-            return;
-        }
+      this.displayLoadingAnimation(true);
+      try {
+        await this.sendResponse();
+      } catch (error) {
+        this.displayLoadingAnimation(false);
+        return;
+      }
     }
     const currentIndex = this.currentQuestionIndex();
     if (currentIndex < this.questionTargets.length - 1) {
-        this.showCurrentQuestion(currentIndex + 1);
+      this.showCurrentQuestion(currentIndex + 1);
     }
     this.updateButtonVisibility();
   }
@@ -62,23 +56,23 @@ export default class extends Controller {
     const currentIndex = this.currentQuestionIndex();
 
     if (!this.validateResponse()) {
-        if (currentIndex > 0) {
-            this.showCurrentQuestion(currentIndex - 1);
-        }
-        this.updateButtonVisibility();
-        return;
+      if (currentIndex > 0) {
+        this.showCurrentQuestion(currentIndex - 1);
+      }
+      this.updateButtonVisibility();
+      return;
     }
     if (this.hasUnsavedChanges) {
-        this.displayLoadingAnimation(true);
-        try {
-            await this.sendResponse();
-        } catch (error) {
-            this.displayLoadingAnimation(false);
-            return;
-        }
+      this.displayLoadingAnimation(true);
+      try {
+        await this.sendResponse();
+      } catch (error) {
+        this.displayLoadingAnimation(false);
+        return;
+      }
     }
     if (currentIndex > 0) {
-        this.showCurrentQuestion(currentIndex - 1);
+      this.showCurrentQuestion(currentIndex - 1);
     }
     this.updateButtonVisibility();
   }
@@ -167,16 +161,16 @@ export default class extends Controller {
   async submit(event) {
     event.preventDefault();
     if (!this.validateResponse()) {
-        return;
+      return;
     }
     this.displayLoadingAnimation(true);
 
     try {
-        const isFinal = true;
-        await this.sendResponse(isFinal);
-        window.location.href = "/success";
+      const isFinal = true;
+      await this.sendResponse(isFinal);
+      window.location.href = "/success";
     } catch (error) {
-        this.displayLoadingAnimation(false);
+      this.displayLoadingAnimation(false);
     }
   }
 
@@ -199,14 +193,14 @@ export default class extends Controller {
         formData.append("keep_existing_image", true);
       }
     } else {
-        formData.append("answer", value);
+      formData.append("answer", value);
     }
 
     formData.append("question_id", currentQuestion.dataset.itemQuestionId);
     formData.append("hardware_id", currentQuestion.dataset.itemHardwareId);
     formData.append("questionnaire_id", currentQuestion.dataset.itemQuestionnaireId);
     if (isFinal) {
-        formData.append("is_final", true);
+      formData.append("is_final", true);
     }
 
     for (let [key, value] of formData.entries()) {
@@ -214,26 +208,28 @@ export default class extends Controller {
     }
 
     try {
-        const response = await axios.post(this.responseDetailsPathValue, formData, {
-          headers: {
-            'X-CSRF-Token': document.querySelector("[name='csrf-token']").content,
-            timeout: 30000,
-          },
-        });
+      const response = await this.fetchWithRetry(this.responseDetailsPathValue, {
+        method: 'POST',
+        headers: {
+          'X-CSRF-Token': document.querySelector("[name='csrf-token']").content,
+          timeout: 30000,
+        },
+        body: formData,
+      }, 3, 1000, 10000);
 
-        if (response.status !== 200) {
-            throw new Error(response.statusText || "HTTP Status ${response.status}");
-        }
+      if (!response.ok) {
+        throw new Error(response.statusText || "HTTP Status ${response.status}");
+      }
 
-        this.hasUnsavedChanges = false;
-        return response;
+      this.hasUnsavedChanges = false;
+      return response;
 
     } catch (error) {
-        console.error("Error sending response:", error);
-        this.displayErrorMessage(currentQuestion, error.message);
-        throw error;
+      console.error("Error sending response:", error);
+      this.displayErrorMessage(currentQuestion, error.message);
+      throw error;
     } finally {
-        this.displayLoadingAnimation(false);
+      this.displayLoadingAnimation(false);
     }
   }
 
@@ -248,5 +244,37 @@ export default class extends Controller {
   findQuestionIndex(input) {
     let parentQuestion = input.closest("[data-questionnaire-target='question']");
     return this.questionTargets.indexOf(parentQuestion);
+  }
+
+  async fetchWithRetry(url, options = {}, retries = 3, retryDelay = 1000, timeout = 5000) {
+    const fetchWithTimeout = (url, options, timeout) => {
+      return new Promise((resolve, reject) => {
+        const timer = setTimeout(() => reject(new Error('Request timed out')), timeout);
+        fetch(url, options)
+          .then(response => {
+            clearTimeout(timer);
+            resolve(response);
+          })
+          .catch(error => {
+            clearTimeout(timer);
+            reject(error);
+          });
+      });
+    };
+
+    for (let attempt = 0; attempt < retries; attempt++) {
+      try {
+        const response = await fetchWithTimeout(url, options, timeout);
+        if (!response.ok) throw new Error(response.statusText || "HTTP Status ${response.status}");
+        return response;
+      } catch (error) {
+        if (attempt < retries < -1) {
+          console.warn(`Retrying request... Attempt ${attempt + 1} of ${retries}`);
+          await new Promise(resolve => setTimeout(resolve, retryDelay));
+        } else {
+          throw error;
+        }
+      }
+    }
   }
 }
