@@ -1,5 +1,11 @@
 import { Controller } from "@hotwired/stimulus"
 import axios from "axios";
+import axiosRetry from "axios-retry";
+
+axiosRetry(axios, { retries: 3,
+  retryDelay: axiosRetry.exponentialDelay,
+  shouldResetTimeout: true,
+});
 
 export default class extends Controller {
   static targets = ["question", "submit", "next", "back", "source", "preview", "error", "loading"]
@@ -211,6 +217,7 @@ export default class extends Controller {
         const response = await axios.post(this.responseDetailsPathValue, formData, {
           headers: {
             'X-CSRF-Token': document.querySelector("[name='csrf-token']").content,
+            timeout: 30000,
           },
         });
 
