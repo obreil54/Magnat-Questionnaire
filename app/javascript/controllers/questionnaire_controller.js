@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import axios from "axios";
 
 export default class extends Controller {
   static targets = ["question", "submit", "next", "back", "source", "preview", "error", "loading"]
@@ -207,17 +208,14 @@ export default class extends Controller {
     }
 
     try {
-        const response = await fetch(this.responseDetailsPathValue, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-Token': document.querySelector("[name='csrf-token']").content,
-            },
-            body: formData
+        const response = await axios.post(this.responseDetailsPathValue, formData, {
+          headers: {
+            'X-CSRF-Token': document.querySelector("[name='csrf-token']").content,
+          },
         });
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || `HTTP Status ${response.status}`);
+        if (response.status !== 200) {
+            throw new Error(response.statusText || "HTTP Status ${response.status}");
         }
 
         this.hasUnsavedChanges = false;
