@@ -20,18 +20,19 @@
     - TZ='Europe/Moscow' date '+%Y-%m-%d %H:%M:%S'
   script:
     - export MAGNAT_VERSION="${CI_COMMIT_REF_SLUG} $(TZ='Europe/Moscow' date '+%Y-%m-%d %H:%M:%S')"
+    - docker compose pull client-backend
     - if [ -z `docker compose ps -q db` ] || [ -z `docker ps -q --no-trunc | grep $(docker compose ps -q db)` ];
       then docker compose up --no-deps -d; else docker compose up --no-deps -d client-backend; fi
   tags:
     - docker
 
 
-#cache:
-#  key: $CI_PROJECT_NAME
-#  paths:
-#    - vendor
-#    - public
-#    - rails
+cache:
+  key: $CI_PROJECT_NAME
+  paths:
+    - vendor
+    - public
+    - rails
 
 stages:
   - build
