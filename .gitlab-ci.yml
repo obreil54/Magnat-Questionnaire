@@ -26,12 +26,12 @@
     - docker
 
 
-cache:
-  key: $CI_PROJECT_NAME
-  paths:
-    - vendor
-    - public
-    - rails
+#cache:
+#  key: $CI_PROJECT_NAME
+#  paths:
+#    - vendor
+#    - public
+#    - rails
 
 stages:
   - build
