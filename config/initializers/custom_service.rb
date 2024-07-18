@@ -18,7 +18,7 @@ Rails.application.config.to_prepare do
       service: "CustomFile",
       token: "",
       base_url: ""
-    }
+    
   end
 
   Rails.application.config.active_storage.service_configurations[:custom_service] = custom_service_config
