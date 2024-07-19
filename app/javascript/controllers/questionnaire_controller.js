@@ -140,7 +140,7 @@ export default class extends Controller {
     return this.questionTargets.findIndex((element) => !element.classList.contains("d-none"));
   }
 
-  show(event) {
+  async show(event) {
     const index = this.sourceTargets.indexOf(event.target);
     const previewTarget = this.previewTargets[index];
     const file = event.target.files[0];
@@ -148,13 +148,18 @@ export default class extends Controller {
     const currentQuestion = this.questionTargets[currentIndex];
 
     if (file && file.type.match('image')) {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        previewTarget.innerHTML = `<img src="${e.target.result}">`
-      };
-      reader.readAsDataURL(file);
-      this.lastSelectedImages[currentQuestion.dataset.itemQuestionId] = file;
-      this.hasUnsavedChanges = true;
+      try {
+        const resizedFile = await this.resizeImage(file);
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          previewTarget.innerHTML = `<img src="${e.target.result}">`
+        };
+        reader.readAsDataURL(resizedFile);
+        this.lastSelectedImages[currentQuestion.dataset.itemQuestionId] = resizedFile;
+        this.hasUnsavedChanges = true;
+      } catch (error) {
+        console.error("Error resizing image:", error);
+      }
     }
   }
 
@@ -183,8 +188,13 @@ export default class extends Controller {
     const value = input.value
 
     if (input.type === "file") {
-      const file = input.files[0];
+      let file = input.files[0];
       if (file) {
+        try {
+          file = await this.resizeImage(file);
+        } catch (error) {
+          console.error("Error resizing image:", error);
+        }
         formData.append("answer", file);
       } else if (this.lastSelectedImages[currentQuestion.dataset.itemQuestionId]) {
         formData.append("answer", this.lastSelectedImages[currentQuestion.dataset.itemQuestionId]);
@@ -203,22 +213,18 @@ export default class extends Controller {
       formData.append("is_final", true);
     }
 
-    for (let [key, value] of formData.entries()) {
-      console.log(`${key}: ${value}`);
-    }
-
     try {
-      const response = await this.fetchWithRetry(this.responseDetailsPathValue, {
+      const response = await fetch(this.responseDetailsPathValue, {
         method: 'POST',
         headers: {
-          'X-CSRF-Token': document.querySelector("[name='csrf-token']").content,
-          timeout: 30000,
+            'X-CSRF-Token': document.querySelector("[name='csrf-token']").content,
         },
-        body: formData,
-      }, 3, 1000, 10000);
+        body: formData
+      });
 
       if (!response.ok) {
-        throw new Error(response.statusText || "HTTP Status ${response.status}");
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP Status ${response.status}`);
       }
 
       this.hasUnsavedChanges = false;
@@ -246,35 +252,51 @@ export default class extends Controller {
     return this.questionTargets.indexOf(parentQuestion);
   }
 
-  async fetchWithRetry(url, options = {}, retries = 3, retryDelay = 1000, timeout = 5000) {
-    const fetchWithTimeout = (url, options, timeout) => {
-      return new Promise((resolve, reject) => {
-        const timer = setTimeout(() => reject(new Error('Request timed out')), timeout);
-        fetch(url, options)
-          .then(response => {
-            clearTimeout(timer);
-            resolve(response);
-          })
-          .catch(error => {
-            clearTimeout(timer);
-            reject(error);
-          });
-      });
-    };
+  resizeImage(file, maxWidth = 1024, maxHeight = 1024, quality = 0.7) {
+    return new Promise((resolve, reject) => {
+      const img = document.createElement("img");
+      const reader = new FileReader();
 
-    for (let attempt = 0; attempt < retries; attempt++) {
-      try {
-        const response = await fetchWithTimeout(url, options, timeout);
-        if (!response.ok) throw new Error(response.statusText || "HTTP Status ${response.status}");
-        return response;
-      } catch (error) {
-        if (attempt < retries < -1) {
-          console.warn(`Retrying request... Attempt ${attempt + 1} of ${retries}`);
-          await new Promise(resolve => setTimeout(resolve, retryDelay));
-        } else {
-          throw error;
-        }
-      }
-    }
+      reader.onload = function(e) {
+        img.src = e.target.result;
+
+        img.onload = function() {
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > maxWidth) {
+              height *= maxWidth / width;
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width *= maxHeight / height;
+              height = maxHeight;
+            }
+          }
+
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, width, height);
+
+          canvas.toBlob((blob) => {
+            resolve(new File([blob], file.name, { type: file.type, lastModified: Date.now() }));
+          }, file.type, quality);
+        };
+
+        img.onerror = function(err) {
+          reject(err);
+        };
+      };
+
+      reader.onerror = function(err) {
+        reject(err);
+      };
+
+      reader.readAsDataURL(file);
+    });
   }
 }
