@@ -181,45 +181,50 @@ export default class extends Controller {
 
   async sendResponse(isFinal = false) {
     const currentIndex = this.currentQuestionIndex();
-    const formData = new FormData();
     const currentQuestion = this.questionTargets[currentIndex];
     const input = currentQuestion.querySelector("input, select, textarea");
-    const name = input.name
-    const value = input.value
+    const name = input.name;
+    const value = input.value;
+
+    let payload = {
+      question_id: currentQuestion.dataset.itemQuestionId,
+      hardware_id: currentQuestion.dataset.itemHardwareId,
+      questionnaire_id: currentQuestion.dataset.itemQuestionnaireId,
+      answer: value,
+    };
+
+    if (isFinal) {
+      payload.is_final = true;
+    }
 
     if (input.type === "file") {
       let file = input.files[0];
       if (file) {
         try {
           file = await this.resizeImage(file);
+          const fileBlob = new Blob([file], { type: file.type });
+          payload.answer = fileBlob;
         } catch (error) {
           console.error("Error resizing image:", error);
         }
-        formData.append("answer", file);
       } else if (this.lastSelectedImages[currentQuestion.dataset.itemQuestionId]) {
-        formData.append("answer", this.lastSelectedImages[currentQuestion.dataset.itemQuestionId]);
+        payload.answer = this.lastSelectedImages[currentQuestion.dataset.itemQuestionId];
         this.lastSelectedImages[currentQuestion.dataset.itemQuestionId] = null;
       } else if (currentQuestion.dataset.existingImage) {
-        formData.append("keep_existing_image", true);
+        payload.keep_existing_image = true;
       }
-    } else {
-      formData.append("answer", value);
     }
 
-    formData.append("question_id", currentQuestion.dataset.itemQuestionId);
-    formData.append("hardware_id", currentQuestion.dataset.itemHardwareId);
-    formData.append("questionnaire_id", currentQuestion.dataset.itemQuestionnaireId);
-    if (isFinal) {
-      formData.append("is_final", true);
-    }
+    const formData = new FormData();
+    Object.keys(payload).forEach(key => formData.append(key, payload[key]));
 
     try {
       const response = await fetch(this.responseDetailsPathValue, {
         method: 'POST',
         headers: {
-            'X-CSRF-Token': document.querySelector("[name='csrf-token']").content,
+          'X-CSRF-Token': document.querySelector("[name='csrf-token']").content,
         },
-        body: formData
+        body: formData,
       });
 
       if (!response.ok) {
