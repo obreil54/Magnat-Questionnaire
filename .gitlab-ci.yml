@@ -69,16 +69,16 @@ build:
       - Dockerfile
       - Gemfile
       - Gemfile.lock
-      - app/*
-      - bin/*
-      - config/*
-      - db/*
-      - lib/*
-      - log/*
-      - public/*
-      - storage/*
-      - test/*
-      - vendor/*
+      - app/**/*
+      - bin/**/*
+      - config/**/*
+      - db/**/*
+      - lib/**/*
+      - log/**/*
+      - public/**/*
+      - storage/**/*
+      - test/**/*
+      - vendor/**/*
 
 
 deploy to dev:
