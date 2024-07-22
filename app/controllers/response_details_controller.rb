@@ -12,9 +12,10 @@ class ResponseDetailsController < ApplicationController
       response = Response.find_by(questionnaire_id: questionnaire_id, user_id: current_user.id)
       response_detail = response.response_details.find_or_initialize_by(question_id: question_id, hardware_id: hardware_id)
 
-      image_file = params.dig("response_details_attributes", question_id.to_s, "image")
-      if image_file.blank? && answer.is_a?(ActionDispatch::Http::UploadedFile)
-        image_file = answer
+      # Handle base64 image string
+      image_file = nil
+      if answer.present? && answer.start_with?("data:image")
+        image_file = base64_to_uploaded_file(answer)
       end
 
       if image_file.present? && image_file.is_a?(ActionDispatch::Http::UploadedFile)
@@ -40,7 +41,6 @@ class ResponseDetailsController < ApplicationController
         response_detail.answer = answer if answer.present? && !image_file.present?
       end
 
-
       if params[:is_final] == "true"
         response.end_date = DateTime.now
         response.save
@@ -58,6 +58,23 @@ class ResponseDetailsController < ApplicationController
   end
 
   private
+
+  def base64_to_uploaded_file(base64_string)
+    content_type, encoded_image = base64_string.split(',', 2)
+    extension = content_type.match(/data:image\/(\w+);base64/)[1]
+    decoded_image = Base64.decode64(encoded_image)
+
+    tempfile = Tempfile.new(["image", ".#{extension}"])
+    tempfile.binmode
+    tempfile.write(decoded_image)
+    tempfile.rewind
+
+    ActionDispatch::Http::UploadedFile.new(
+      tempfile: tempfile,
+      filename: "upload.#{extension}",
+      type: content_type
+    )
+  end
 
   def check_image_question_and_validate_settings
     question = Question.find(params[:question_id])

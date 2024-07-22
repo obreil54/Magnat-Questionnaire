@@ -201,29 +201,26 @@ export default class extends Controller {
       if (file) {
         try {
           file = await this.resizeImage(file);
-          const fileBlob = new Blob([file], { type: file.type });
-          payload.answer = fileBlob;
+          payload.answer = await this.fileToBase64(file);
         } catch (error) {
-          console.error("Error resizing image:", error);
+          console.error("Error resizing or converting image:", error);
         }
       } else if (this.lastSelectedImages[currentQuestion.dataset.itemQuestionId]) {
-        payload.answer = this.lastSelectedImages[currentQuestion.dataset.itemQuestionId];
+        payload.answer = await this.fileToBase64(this.lastSelectedImages[currentQuestion.dataset.itemQuestionId]);
         this.lastSelectedImages[currentQuestion.dataset.itemQuestionId] = null;
       } else if (currentQuestion.dataset.existingImage) {
         payload.keep_existing_image = true;
       }
     }
 
-    const formData = new FormData();
-    Object.keys(payload).forEach(key => formData.append(key, payload[key]));
-
     try {
       const response = await fetch(this.responseDetailsPathValue, {
         method: 'POST',
         headers: {
+          'Content-Type': 'application/json',
           'X-CSRF-Token': document.querySelector("[name='csrf-token']").content,
         },
-        body: formData,
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -241,6 +238,19 @@ export default class extends Controller {
     } finally {
       this.displayLoadingAnimation(false);
     }
+  }
+
+  fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        resolve(e.target.result);
+      };
+      reader.onerror = function (error) {
+        reject(error);
+      };
+      reader.readAsDataURL(file);
+    });
   }
 
   displayErrorMessage(questionElement, message) {
