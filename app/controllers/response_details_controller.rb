@@ -12,7 +12,6 @@ class ResponseDetailsController < ApplicationController
       response = Response.find_by(questionnaire_id: questionnaire_id, user_id: current_user.id)
       response_detail = response.response_details.find_or_initialize_by(question_id: question_id, hardware_id: hardware_id)
 
-      # Handle base64 image string
       image_file = nil
       if answer.present? && answer.start_with?("data:image")
         image_file = base64_to_uploaded_file(answer)
