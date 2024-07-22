@@ -4,7 +4,6 @@ export default class extends Controller {
   static targets = ["question", "submit", "next", "back", "source", "preview", "error", "loading"]
   static values = { responseDetailsPath: String }
 
-
   initialize() {
     console.log("Questionnaire controller initialized test for 24/06/2024")
     this.showCurrentQuestion(0);

@@ -1,68 +1,112 @@
-image: docker
-services:
-  - docker:dind
+.docker_login: &docker-login
+    - docker login -u gitlab-ci-token -p ${CI_JOB_TOKEN} ${CI_REGISTRY}
 
-#cache:
-#  key: $CI_PROJECT_NAME
-#  paths:
-#    - vendor
-#    - public
-#    - rails
+.docker_push: &docker-push
+    - docker push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_SLUG}
 
-variables:
-  DOCKER_HOST: tcp://docker:2375/
-  DOCKER_DRIVER: overlay2
-  # CONTAINER_LATEST_IMAGE: $CI_REGISTRY_IMAGE:latest
-  CONTAINER_STABLE_IMAGE: $CI_REGISTRY_IMAGE:stable
-  DOCKER_TLS_CERTDIR: ""
+.deploy_docker_compose: &deploy_docker_compose
+  stage: deploy
+  image: docker:27.0.3
+  variables:
+    DOCKER_HOST: "ssh://${SERVER_USER}@${SERVER_HOST}"
+  before_script:
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - eval $(ssh-agent -s)
+    - echo "${SSH_PRIVATE_KEY}" | tr -d '\r' | ssh-add -
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - date '+%Y-%m-%d %H:%M:%S'
+    - TZ='Europe/Moscow' date '+%Y-%m-%d %H:%M:%S'
+  script:
+    - export MAGNAT_VERSION="${CI_COMMIT_REF_SLUG} $(TZ='Europe/Moscow' date '+%Y-%m-%d %H:%M:%S')"
+    - docker compose pull client-backend
+    - if [ -z `docker compose ps -q db` ] || [ -z `docker ps -q --no-trunc | grep $(docker compose ps -q db)` ];
+      then docker compose up --no-deps -d; else docker compose up --no-deps -d client-backend; fi
+  tags:
+    - docker
+
+
+cache:
+  key: $CI_PROJECT_NAME
+  paths:
+    - vendor
+    - public
+    - rails
+
 stages:
   - build
   - test
   - release
   - deploy
 
-before_script:
-  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-
 build:
   stage: build
+  image: docker:27.0.3
+  services:
+    - name: docker:27.0.3-dind
+      variables:
+        DOCKER_HOST: tcp://docker:2375
+        DOCKER_TLS_CERTDIR: ""
+        DOCKER_DRIVER: overlay2
+    - name: postgres:14.7-alpine
+      alias: ${POSTGRES_HOST}
+  variables:
+    POSTGRES_HOST: postgresql
+    POSTGRES_DB: my_app_gitlab
+    POSTGRES_USER: my_app
+    POSTGRES_PASSWORD: 'git!ab'
   script:
-    - docker pull $CI_REGISTRY_IMAGE:base_production || true
-    - docker build --target base --cache-from $CI_REGISTRY_IMAGE:base_production
-                    --tag $CI_REGISTRY_IMAGE:base_production
-                    --build-arg revision=$CI_COMMIT_SHA
-                    --build-arg BUILDKIT_INLINE_CACHE=1
-                    -f ./Dockerfile .
+    - *docker-login
+    - docker build --add-host=${POSTGRES_HOST}:$(getent hosts ${POSTGRES_HOST}  | awk '{ print $1 }') -t ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_SLUG}
+        --build-arg POSTGRES_HOST=${POSTGRES_HOST} --build-arg POSTGRES_DB=${POSTGRES_DB}
+        --build-arg POSTGRES_USER=${POSTGRES_USER} --build-arg POSTGRES_PASSWORD=${POSTGRES_PASSWORD} .
+    - *docker-push
+  tags:
+    - docker
+  only:
+    changes:
+      - Dockerfile
+      - Gemfile
+      - Gemfile.lock
+      - app/**/*
+      - bin/**/*
+      - config/**/*
+      - db/**/*
+      - lib/**/*
+      - log/**/*
+      - public/**/*
+      - storage/**/*
+      - test/**/*
+      - vendor/**/*
 
-    - docker pull $CI_REGISTRY_IMAGE:build_production || true
-    - docker build --target build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from $CI_REGISTRY_IMAGE:base_production --cache-from $CI_REGISTRY_IMAGE:build_production
-                    --tag $CI_REGISTRY_IMAGE:build_production
-                    --build-arg revision=$CI_COMMIT_SHA
-                    -f ./Dockerfile .
 
-    - docker pull $CI_REGISTRY_IMAGE:production || true
-    - docker build
-                   --cache-from $CI_REGISTRY_IMAGE:base_production
-                   --cache-from $CI_REGISTRY_IMAGE:build_production
-                   --cache-from $CI_REGISTRY_IMAGE:production
-                    --tag $CI_REGISTRY_IMAGE:production
-                    --build-arg revision=$CI_COMMIT_SHA
-                    -f ./Dockerfile .
-    - docker push $CI_REGISTRY_IMAGE:base_production
-    - docker push $CI_REGISTRY_IMAGE:build_production
-    - docker push $CI_REGISTRY_IMAGE:production
-
+deploy to dev:
+  <<: *deploy_docker_compose
+#  when:
+#    manual
+  environment:
+    name: development
+  only:
+    - development
+  needs:
+    - job: build
+      optional: true
   tags:
     - docker
 
-#test:
-#  stage: test
-#  script:
-#    - docker compose -f docker-compose.test.yml build --pull
-#    - docker compose -f docker-compose.test.yml run --rm app sh -c "./docker/wait_for_services.sh && bundle exec rake db:create spec"
-#  after_script:
-#    - docker compose -f docker-compose.test.yml run --rm app rm -rf tmp/
-#    - docker compose -f docker-compose.test.yml down
-#    - docker volume rm `docker volume ls -qf dangling=true`
-#  tags:
-#    - docker
+
+deploy to prod:
+  <<: *deploy_docker_compose
+  when:
+    manual
+  environment:
+    name: production
+  only:
+    - main
+  needs:
+    - job: build
+      optional: true
+  tags:
+    - docker
+
