@@ -25,7 +25,6 @@
               </a>
             </h2>
             <h2 class="question"><%= question_count %>. <%= item.question %></h2>
-            <h2>Client testing version 1</h2>
             <% case item.question_type %>
             <% when 'Произвольный Ответ' %>
               <%= f.input "response_details_attributes[#{item.question_id}][answer]", as: :text, label: false, required: item.required, input_html: { value: existing_response&.answer } %>
