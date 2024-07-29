@@ -203,6 +203,7 @@ GEM
     mini_mime (1.1.5)
     minitest (5.22.2)
     msgpack (1.7.2)
+    multipart-post (2.4.1)
     mutex_m (0.2.0)
     nested_form (0.3.2)
     net-imap (0.4.10)
@@ -373,6 +374,7 @@ DEPENDENCIES
   jbuilder
   launchy
   letter_opener
+  multipart-post
   pg (~> 1.1)
   puma (>= 5.0)
   rack-cors
