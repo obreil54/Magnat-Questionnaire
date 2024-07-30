@@ -266,7 +266,7 @@ export default class extends Controller {
     return this.questionTargets.indexOf(parentQuestion);
   }
 
-  resizeImage(file, maxWidth = 1024, maxHeight = 1024, quality = 0.7) {
+  resizeImage(file, maxWidth = 1024, maxHeight = 1024, quality = 1) {
     return new Promise((resolve, reject) => {
       const img = document.createElement("img");
       const reader = new FileReader();
