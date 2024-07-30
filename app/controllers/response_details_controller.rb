@@ -40,7 +40,7 @@ class ResponseDetailsController < ApplicationController
         response_detail.answer = answer if answer.present? && !image_file.present?
       end
 
-      if params[:is_final] == "true"
+      if params[:is_final] == true
         response.end_date = DateTime.now
         response.save
       end
