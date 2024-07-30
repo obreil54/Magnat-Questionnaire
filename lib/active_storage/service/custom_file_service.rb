@@ -136,7 +136,7 @@ class ActiveStorage::Service::CustomFileService < ActiveStorage::Service
   private
 
   def create_readme_if_needed(custom_path)
-    category_hard_path = File.join(Setting.fileapi_path, custom_path.split('/')[0..1].join('/'))
+    category_hard_path = File.join(Setting.fileapi_path, custom_path.split('/')[0..3].join('/'))
     readme_path = File.join(category_hard_path, "Readme.txt")
 
     unless exist?(readme_path)
