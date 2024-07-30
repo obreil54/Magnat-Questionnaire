@@ -17,7 +17,7 @@
             <% question_count = 0 %>
           <% end %>
           <% question_count += 1 %>
-          <% existing_response = @response_details.find_by(question_id: item.question_id) %>
+          <% existing_response = @response_details.find_by(question_id: item.question_id, hardware_id: item.hardware_id) %>
           <div data-questionnaire-target="question" data-item-question-id="<%= item.question_id %>" data-item-hardware-id="<%= item.hardware_id %>" data-item-questionnaire-id="<%= @questionnaire.id %>" data-existing-image="<%= existing_response&.image&.url %>" class="<%= 'd-none' unless index.zero? %>">
             <h2>
               <a href="javascript:void(0);" onclick="openModal('hardwareModal-<%= item.hardware_id %>')">
