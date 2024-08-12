@@ -227,6 +227,7 @@ export default class extends Controller {
           'X-CSRF-Token': document.querySelector("[name='csrf-token']").content,
         },
         body: JSON.stringify(payload),
+        credentials: 'same-origin',
       });
 
       if (!response.ok) {
