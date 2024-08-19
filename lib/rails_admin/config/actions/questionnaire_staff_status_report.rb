@@ -24,6 +24,7 @@ module RailsAdmin
                 @items = Response.includes(:user, :questionnaire)
                                  .where(questionnaire_id: @questionnaire.id, users: {status: true, admin: false})
                                  .where.not(end_date: nil)
+                                 .order(end_date: :desc)
               elsif params[:completed] == 'no'
                 all_responses = Response.includes(:user)
                                         .where(questionnaire_id: @questionnaire.id, users: {status: true, admin: false})
@@ -36,6 +37,7 @@ module RailsAdmin
               else
                 all_responses = Response.includes(:user)
                                         .where(questionnaire_id: @questionnaire.id, users: {status: true, admin: false})
+                                        .order(end_date: :desc)
                 users_ids_with_responses = all_responses.pluck(:user_id)
                 users_without_responses = User.where.not(id: users_ids_with_responses)
                                               .where(status: true, admin: false)
