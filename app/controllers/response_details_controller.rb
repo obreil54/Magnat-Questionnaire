@@ -5,17 +5,14 @@ class ResponseDetailsController < ApplicationController
     begin
       question_id = params[:question_id]
       answer = params[:answer]
-      questionnaire_id = params[:questionnaire_id]
+      questionnaire_id = Questionnaire.find_by(status: true).id
       hardware_id = params[:hardware_id]
       keep_existing_image = params[:keep_existing_image] == "true"
 
       response = Response.find_by(questionnaire_id: questionnaire_id, user_id: current_user.id)
       response_detail = response.response_details.find_or_initialize_by(question_id: question_id, hardware_id: hardware_id)
 
-      image_file = nil
-      if answer.present? && answer.start_with?("data:image")
-        image_file = base64_to_uploaded_file(answer)
-      end
+      image_file = params[:image] if params[:image].is_a?(ActionDispatch::Http::UploadedFile)
 
       if image_file.present? && image_file.is_a?(ActionDispatch::Http::UploadedFile)
         relative_path = PhotoPathGenerator.generate_path(current_user, response_detail.hardware, response.created_at)
@@ -40,7 +37,7 @@ class ResponseDetailsController < ApplicationController
         response_detail.answer = answer if answer.present? && !image_file.present?
       end
 
-      if params[:is_final] == true
+      if params[:is_final] == "true"
         response.end_date = DateTime.now
         response.save
       end

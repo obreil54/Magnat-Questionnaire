@@ -188,18 +188,13 @@ export default class extends Controller {
     const currentIndex = this.currentQuestionIndex();
     const currentQuestion = this.questionTargets[currentIndex];
     const input = currentQuestion.querySelector("input, select, textarea");
-    const name = input.name;
-    const value = input.value;
 
-    let payload = {
-      question_id: currentQuestion.dataset.itemQuestionId,
-      hardware_id: currentQuestion.dataset.itemHardwareId,
-      questionnaire_id: currentQuestion.dataset.itemQuestionnaireId,
-      answer: value,
-    };
+    const formData = new FormData();
+    formData.append("question_id", currentQuestion.dataset.itemQuestionId);
+    formData.append("hardware_id", currentQuestion.dataset.itemHardwareId);
 
     if (isFinal) {
-      payload.is_final = true;
+      formData.append("is_final", "true");
     }
 
     if (input.type === "file") {
@@ -207,26 +202,30 @@ export default class extends Controller {
       if (file) {
         try {
           file = await this.resizeImage(file);
-          payload.answer = await this.fileToBase64(file);
+          formData.append("image", file);
         } catch (error) {
-          console.error("Error resizing or converting image:", error);
+          console.error("Error resizing or processing image:", error);
         }
       } else if (this.lastSelectedImages[currentQuestion.dataset.itemQuestionId]) {
-        payload.answer = await this.fileToBase64(this.lastSelectedImages[currentQuestion.dataset.itemQuestionId]);
+        formData.append("image", this.lastSelectedImages[currentQuestion.dataset.itemQuestionId]);
         this.lastSelectedImages[currentQuestion.dataset.itemQuestionId] = null;
       } else if (currentQuestion.dataset.existingImage) {
-        payload.keep_existing_image = true;
+        formData.append("keep_existing_image", "true");
       }
+    } else {
+      formData.append("answer", input.value);
     }
 
     try {
       const response = await fetch(this.responseDetailsPathValue, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           'X-CSRF-Token': document.querySelector("[name='csrf-token']").content,
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
         },
-        body: JSON.stringify(payload),
+        body: formData,
         credentials: 'same-origin',
       });
 
@@ -247,19 +246,6 @@ export default class extends Controller {
     }
   }
 
-  fileToBase64(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        resolve(e.target.result);
-      };
-      reader.onerror = function (error) {
-        reject(error);
-      };
-      reader.readAsDataURL(file);
-    });
-  }
-
   displayErrorMessage(questionElement, message) {
     const errorMessageDiv = questionElement.querySelector("[data-questionnaire-target='error']");
     if (errorMessageDiv) {
@@ -273,7 +259,7 @@ export default class extends Controller {
     return this.questionTargets.indexOf(parentQuestion);
   }
 
-  resizeImage(file, maxWidth = 1024, maxHeight = 1024, quality = 1) {
+  resizeImage(file, maxWidth = 800, maxHeight = 800, quality = 1) {
     return new Promise((resolve, reject) => {
       const img = document.createElement("img");
       const reader = new FileReader();
