@@ -217,13 +217,13 @@ export default class extends Controller {
     }
 
     try {
-      const response = await fetch(this.responseDetailsPathValue, {
+      const urlWithCacheBuster = `${this.responseDetailsPathValue}?_=${new Date().getTime()}`;
+
+      const response = await fetch(urlWithCacheBuster, {
         method: 'POST',
         headers: {
           'X-CSRF-Token': document.querySelector("[name='csrf-token']").content,
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0',
+          'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
         },
         body: formData,
         credentials: 'same-origin',
