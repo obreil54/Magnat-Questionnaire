@@ -46,7 +46,3 @@ The IT Audit platform was designed to:
 - Centralize the tracking and auditing of IT equipment across the organization.
 - Streamline administrative workflows for handling audit data and generating reports.
 - Improve user experience for employees with intuitive questionnaires and simple authentication.
-
----
-
-This application is live and actively used in production by the client. Due to its proprietary nature, cloning or installing the project is not available for public use.
